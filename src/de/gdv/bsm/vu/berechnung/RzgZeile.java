@@ -848,6 +848,43 @@ public class RzgZeile {
 	}
 
 	/**
+	 * Leistungen beim Tod. N.
+	 * 
+	 * @return der Wert
+	 */
+	public double getlTod() {
+		return lTod;
+	}
+
+	/**
+	 * Kapitalfidungen. O.
+	 * 
+	 * @return der Wert
+	 */
+	public double getlKa() {
+		return lKa;
+	}
+	
+	/**
+	 * Sonstige Erlebensfallleistungen. P.
+	 * 
+	 * @return der Wert
+	 */
+	public double getsonstigeErlebensfallLeistungen() {
+		return sonstigeErlebensfallLeistungen;
+	}
+	
+	/**
+	 * Rückkaufwert. Q.
+	 * 
+	 * @return der Wert
+	 */
+	public double getlRkw() {
+		return lRkw;
+	}
+	
+	
+	/**
 	 * Risikoüberschüsse. R.
 	 * 
 	 * @return der Wert

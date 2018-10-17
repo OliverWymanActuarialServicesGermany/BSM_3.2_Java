@@ -44,7 +44,17 @@ public class MittelwerteUndCe {
 	private final int szenarioId;
 	private final String lob;
 	private final int zeit;
-	@TableField(columnName="Aufwendungen für KA, anteilsmäßig")
+	@TableField(columnName="Leistungen beim Tod")	
+	private final double n; //Leistungen beim Tod
+	@TableField(columnName="Kapitalabfindungen, nur Rentenversicherung")	
+	private final double o;//Kapitalabfindungen, nur Rentenversicherung
+	@TableField(columnName="Sonstige Erlebensfallleistungen")	
+	private final double p;//Sonstige Erlebensfallleistungen
+	@TableField(columnName="Rückkauf")	
+	private final double q;//Rückkauf
+	@TableField(columnName="HGB DRst inkl. Ansammlungsguthaben ohne ZZR")	
+	private final double w;//HGB DRst inkl. Ansammlungsguthaben ohne ZZR		
+	@TableField(columnName="Aufwendungen für KA, anteilsmäßig")		
 	private final double bv; // Aufwendungen für KA, anteilsmäßig, neu BW
 	@TableField(columnName="Leistungen Gesamt")
 	private final double bj; // Leistungen Gesamt, neu BK
@@ -56,6 +66,8 @@ public class MittelwerteUndCe {
 	private final double ag; // Kosten stochastisch, neu AH
 	@TableField(columnName="CF EVU -> RVU (nicht LE-abhängig), stochastisch, diskontiert")
 	private final double ak; // CE EVU -> RVU (nicht LE-abhängig), stochastisch; diskontiert, neu AL
+	@TableField(columnName="Gesamt Storno")	
+	private final double br;//Gesamt Storno
 
 	/**
 	 * Erstelle die Kennzahlen zu einem Pfad anhand der Agg-Zeilen.
@@ -85,12 +97,18 @@ public class MittelwerteUndCe {
 		this.lob = lob;
 		this.zeit = zeit;
 
+		this.n = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlTod(), aggZeile, monat)).sum();
+		this.o = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlKa(), aggZeile, monat)).sum();		
+		this.p = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getsonstigeErlebensfallLeistungen(), aggZeile, monat)).sum();		
+		this.q = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlRkw(), aggZeile, monat)).sum();	
+		this.w = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getDrDet(), aggZeile, monat)).sum();	
 		this.bv = rzgZeilen.stream().mapToDouble(z -> df(z.getKostenKaRzg(), aggZeile)).sum();
 		this.bj = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getLGesamt(), aggZeile, monat)).sum();
 		this.bk = rzgZeilen.stream().mapToDouble(z -> df(z.getEndZahlung(), aggZeile)).sum();
 		this.af = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getBeitraegeStoch(), aggZeile, monat)).sum();
 		this.ag = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getKostenStoch(), aggZeile, monat)).sum();
 		this.ak = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getCfRvStoch(), aggZeile, monat)).sum();
+		this.br = aggZeile.getfiMw();
 	}
 
 	/**
@@ -127,7 +145,42 @@ public class MittelwerteUndCe {
 	public int getZeit() {
 		return zeit;
 	}
+	
+	/**
+	 * @return the n
+	 */
+	public double getN() {
+		return n;
+	}
 
+	/**
+	 * @return the o
+	 */
+	public double getO() {
+		return o;
+	}
+	
+	/**
+	 * @return the p
+	 */
+	public double getP() {
+		return p;
+	}
+	
+	/**
+	 * @return the q
+	 */
+	public double getQ() {
+		return q;
+	}
+	
+	/**
+	 * @return the w
+	 */
+	public double getW() {
+		return w;
+	}
+	
 	/**
 	 * @return the bv
 	 */
@@ -168,6 +221,13 @@ public class MittelwerteUndCe {
 	 */
 	public double getAk() {
 		return ak;
+	}
+
+	/**
+	 * @return the br
+	 */
+	public double getBr() {
+		return br;
 	}
 
 }

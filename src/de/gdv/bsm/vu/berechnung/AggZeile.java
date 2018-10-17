@@ -1773,6 +1773,18 @@ public class AggZeile {
 	}
 
 	// ========================================================================
+	// Get-Funktionen der agg-Spalten BA bis BZ.
+	
+	/**
+	 * FI_MW. BR.
+	 * 
+	 * @return der Wert
+	 */
+	public double getfiMw() {
+		return fiMw;
+	}
+
+	// ========================================================================
 	// Get-Funktionen der agg-Spalten CA bis CZ.
 
 	// ========================================================================
@@ -1922,6 +1934,15 @@ public class AggZeile {
 		return endZahlungAgg;
 	}
 
+	/**
+	 * Passive Reserve. GX.
+	 * 
+	 * @return der Wert
+	 */
+	public double getbwrPas() {
+		return bwrPas;
+	}
+	
 	// ========================================================================
 	// Get-Funktionen der agg-Spalten HA bis HZ.
 
