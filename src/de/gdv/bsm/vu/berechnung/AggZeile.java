@@ -8,11 +8,14 @@ import java.util.function.Function;
 
 import de.gdv.bsm.intern.applic.TableField;
 import de.gdv.bsm.intern.applic.TableField.TestOption;
+import de.gdv.bsm.intern.params.MW;
+import de.gdv.bsm.intern.params.MWZeile;
 import de.gdv.bsm.intern.params.ReferenzZinssatz;
 import de.gdv.bsm.intern.params.ZeitunabhManReg;
 import de.gdv.bsm.intern.rechnung.CheckData;
 import de.gdv.bsm.intern.rechnung.ResultNotFinite;
 import de.gdv.bsm.intern.szenario.PfadZeile;
+import de.gdv.bsm.intern.szenario.Szenario;
 import de.gdv.bsm.vu.module.Bilanzpositionen;
 import de.gdv.bsm.vu.module.Deklaration;
 import de.gdv.bsm.vu.module.EsgFormeln;
@@ -20,6 +23,10 @@ import de.gdv.bsm.vu.module.Functions;
 import de.gdv.bsm.vu.module.KaModellierung;
 import de.gdv.bsm.vu.module.MIL_Funktionen;
 import de.gdv.bsm.vu.module.Rohueberschuss;
+
+//OW_D.Hohmann
+import de.gdv.bsm.vu.module.OW_Funktionen;
+
 
 /**
  * Simuliert eine Zeile des Blattes agg. Weiter werden hier auch die Daten der Blätter <b>VT Klassik MW</b> und <b>FI
@@ -802,32 +809,188 @@ public class AggZeile {
 	double spotVnVerhaltenEsg = DOUBLE_INIT;
 
 	// MIL_W.Schalesi
-	/** MMR-Trigger FI Kupon der Neuanlage in t. HR, L 1. */
-	@TableField(nachKomma = 0)
+	/** MMR-Trigger FI Kupon der Neuanlage in t. L 1. */
+	@TableField(testColumn = "HR", nachKomma = 0)
 	double mmrCouponTrigger = 0;
 	double[] mmrCouponTriggerArr;
 
 	// MIL_W.Schalesi
-	/** MMR-Trigger FI Kupon der Neuanlage in t Boolean. HS, L 1. */
-	@TableField(nachKomma = 0)
+	/** MMR-Trigger FI Kupon der Neuanlage in t Boolean. L 1. */
+	@TableField(testColumn = "HS", nachKomma = 0)
 	boolean mmrCouponTriggerBoolean = false;
 
 	// MIL_W.Schalesi
-	/** MMR-Trigger JÜ. HT, Rekursiv1. */
-	@TableField(nachKomma = 0)
+	/** MMR-Trigger JÜ. Rekursiv1. */
+	@TableField(testColumn = "HT", nachKomma = 0)
 	double mmrJueTrigger = 0;
 	double[] mmrJueTriggerArr;
 
 	// MIL_W.Schalesi
-	/** MMR-Trigger JÜ Boolean. HU, Rekursiv1. */
-	@TableField(nachKomma = 0)
+	/** MMR-Trigger JÜ Boolean. Rekursiv1. */
+	@TableField(testColumn = "HU", nachKomma = 0)
 	boolean mmrJueTriggerBoolean = false;
-
+	
+	// OW_M.Bartnicki
+	/** Zielbeteiligung am Rohüberschuss in % vom Rohüberschuss p_Rohüb. L2*/
+	@TableField(testColumn = "HV", nachKomma = 2)
+	double zielBeteiligungssatzRohueb_OW = DOUBLE_INIT;
+	/** Flex. Überschussbet. Trigger Marktwertveränderung - Auswahl Marktschock L2*/
+	@TableField(testColumn = "HW", nachKomma = 0)
+	int zusatzoption_UEB_SzenarioID;
+	/** Flex. Überschussbet. Trigger Marktwertveränderung - Ziel Projektionsjahr . L2*/
+	@TableField(testColumn = "HX", nachKomma = 0)
+	int zusatzoption_UEB_ZielPJ;
+		
 	// MIL_W.Schalesi
-	/** Mindestanteil FI stetig. HW, Rekursiv2. */
-	@TableField(nachKomma = 0, percent = true)
+	/** Mindestanteil FI stetig. Rekursiv2. */
+	@TableField(testColumn = "HY", nachKomma = 0, percent = true)
 	double aFiMinDaaStetig = DOUBLE_INIT;
 
+
+	// OW_LS
+	/** FI Buchwert Neuanlage im Zeitpunkt t - 1 */
+	@TableField(testColumn = "HZ", testOption = TestOption.START, nachKomma = 0)
+	double bwFiNeuAn_1 = DOUBLE_INIT;
+	/** FI Restlaufzeit der Neuanlage - 1 */
+	@TableField(testColumn = "IA")
+	int rlz_1 = Integer.MAX_VALUE;
+	/** Zeitpunkt der Fälligkeit der Neuanlage - 1 */
+	@TableField(testColumn = "IB")
+	int zpFaelligkeit_1 = Integer.MAX_VALUE;
+	/** FI Kupon der Neuanlage in t - 1 */
+	@TableField(testColumn = "IC", nachKomma = 3, percent = true)
+	double kuponEsg_1 = DOUBLE_INIT;
+	/** FI Cash Flow aus dem Neubestand - 1  */
+	@TableField(testColumn = "ID", testOption = TestOption.START, nachKomma = 0)
+	double cfFiNeuAnl_1 = DOUBLE_INIT;
+	/** FI Kapitalertrag des Neubestands - 1 */
+	@TableField(testColumn = "IE", testOption = TestOption.START, nachKomma = 0)
+	double keFiNeuAnl_1 = DOUBLE_INIT;
+	/** FI Buchwert Neuanlage im Zeitpunkt t - 2 */
+	@TableField(testColumn = "IF", testOption = TestOption.START, nachKomma = 0)
+	double bwFiNeuAn_2 = DOUBLE_INIT;
+	/** FI Restlaufzeit der Neuanlage - 2 */
+	@TableField(testColumn = "IG")
+	int rlz_2 = Integer.MAX_VALUE;
+	/** Zeitpunkt der Fälligkeit der Neuanlage - 2 */
+	@TableField(testColumn = "IH")
+	int zpFaelligkeit_2 = Integer.MAX_VALUE;
+	/** FI Kupon der Neuanlage in t - 2 */
+	@TableField(testColumn = "II", nachKomma = 3, percent = true)
+	double kuponEsg_2 = DOUBLE_INIT;
+	/** FI Cash Flow aus dem Neubestand - 2  */
+	@TableField(testColumn = "IJ", testOption = TestOption.START, nachKomma = 0)
+	double cfFiNeuAnl_2 = DOUBLE_INIT;
+	/** FI Kapitalertrag des Neubestands - 2 */
+	@TableField(testColumn = "IK", testOption = TestOption.START, nachKomma = 0)
+	double keFiNeuAnl_2 = DOUBLE_INIT;
+	/** FI Buchwert Neuanlage im Zeitpunkt t - 3 */
+	@TableField(testColumn = "IL", testOption = TestOption.START, nachKomma = 0)
+	double bwFiNeuAn_3 = DOUBLE_INIT;
+	/** FI Restlaufzeit der Neuanlage - 3 */
+	@TableField(testColumn = "IM")
+	int rlz_3 = Integer.MAX_VALUE;
+	/** Zeitpunkt der Fälligkeit der Neuanlage -3 */
+	@TableField(testColumn = "IN")
+	int zpFaelligkeit_3 = Integer.MAX_VALUE;
+	/** FI Kupon der Neuanlage in t - 3 */
+	@TableField(testColumn = "IO", nachKomma = 3, percent = true)
+	double kuponEsg_3 = DOUBLE_INIT;
+	/** FI Cash Flow aus dem Neubestand - 3  */
+	@TableField(testColumn = "IP", testOption = TestOption.START, nachKomma = 0)
+	double cfFiNeuAnl_3 = DOUBLE_INIT;
+	/** FI Kapitalertrag des Neubestands - 3 */
+	@TableField(testColumn = "IQ", testOption = TestOption.START, nachKomma = 0)
+	double keFiNeuAnl_3 = DOUBLE_INIT;
+	/** FI Buchwert Neuanlage im Zeitpunkt t - 4 */
+	@TableField(testColumn = "IR", testOption = TestOption.START, nachKomma = 0)
+	double bwFiNeuAn_4 = DOUBLE_INIT;
+	/** FI Restlaufzeit der Neuanlage - 4 */
+	@TableField(testColumn = "IS")
+	int rlz_4 = Integer.MAX_VALUE;
+	/** Zeitpunkt der Fälligkeit der Neuanlage -4 */
+	@TableField(testColumn = "IT")
+	int zpFaelligkeit_4 = Integer.MAX_VALUE;
+	/** FI Kupon der Neuanlage in t - 4 */
+	@TableField(testColumn = "IU", nachKomma = 3, percent = true)
+	double kuponEsg_4 = DOUBLE_INIT;
+	/** FI Cash Flow aus dem Neubestand - 4  */
+	@TableField(testColumn = "IV", testOption = TestOption.START, nachKomma = 0)
+	double cfFiNeuAnl_4 = DOUBLE_INIT;
+	/** FI Kapitalertrag des Neubestands - 4 */
+	@TableField(testColumn = "IW", testOption = TestOption.START, nachKomma = 0)
+	double keFiNeuAnl_4 = DOUBLE_INIT;
+	
+	//OW_D.Hohmann
+    /** ZZR UEB, alt_sl. */
+	@TableField(testColumn = "IW", testOption = TestOption.START, nachKomma = 0)
+	double zzrAlt_sl;
+	/** ZZR UEB, neu_sl. */
+	@TableField(testColumn = "IX", testOption = TestOption.START, nachKomma = 0)
+	double zzrNeu_sl;
+   /** delta-ZZR UEB, Altbestand_sl. */
+	@TableField(testColumn = "IY", testOption = TestOption.START, nachKomma = 0)
+	double deltaZzrUebAlt_sl = DOUBLE_INIT;
+	/** delta-ZZR UEB, Neubestand_sl. */
+	@TableField(testColumn = "IZ", testOption = TestOption.START, nachKomma = 0)
+	double deltaZzrUebNeu_sl = DOUBLE_INIT;
+	/** rmZ UEB Altbestand_sl. */
+	@TableField(testColumn = "JA", testOption = TestOption.START, nachKomma = 0)
+	double rmzUebAlt_sl = DOUBLE_INIT;
+	/** rmZ UEB Neubestand_sl. */
+	@TableField(testColumn = "JB", testOption = TestOption.START, nachKomma = 0)
+	double rmzUebNeu_sl = DOUBLE_INIT;
+	/** rmZ UEB Gesamt Altbestand_sl. */
+	@TableField(testColumn = "JC", testOption = TestOption.START, nachKomma = 0)
+	double rmzUebGesamtAlt_sl = DOUBLE_INIT;
+	/** rmZ UEB Gesamt Neubestand_sl. */
+	@TableField(testColumn = "JD", testOption = TestOption.START, nachKomma = 0)
+	double rmzUebGesamtNeu_sl = DOUBLE_INIT;
+	/** SÜAF, alt_sl. */
+	@TableField(testColumn = "JF", testOption = TestOption.START, nachKomma = 0)
+	double sueAfAlt_sl = DOUBLE_INIT;
+	/** SÜAF, neu_sl. */
+	@TableField(testColumn = "JE", testOption = TestOption.START, nachKomma = 0)
+	double sueAfNeu_sl = DOUBLE_INIT;
+	/** Übriges Ergebnis ÜB Altbestand_sl stochastisch. */
+	@TableField(testColumn = "JG", testOption = TestOption.START, nachKomma = 0)
+	double ueEalt_sl = DOUBLE_INIT;
+	/** Übriges Ergebnis ÜB Neubestand_sl stochastisch. */
+	@TableField(testColumn = "JH", testOption = TestOption.START, nachKomma = 0)
+	double ueEneu_sl = DOUBLE_INIT;
+	/** Übriges Ergebnis UEB, Bestand (ohne GCR) Altbestand_sl stochastisch. */
+	@TableField(testColumn = "JI", testOption = TestOption.START, nachKomma = 0)
+	double ueEaltNoGcr_sl = DOUBLE_INIT;
+	/** Übriges Ergebnis UEB, Bestand (ohne GCR) Neubestand_sl stochastisch. */
+	@TableField(testColumn = "JJ", testOption = TestOption.START, nachKomma = 0)
+	double ueEneuNoGcr_sl = DOUBLE_INIT;
+	/** Risikoergebnis UEB, alt_sl, stochastisch. */
+	@TableField(testColumn = "JK", testOption = TestOption.START, nachKomma = 0)
+	double reAlt_sl = DOUBLE_INIT;
+	/** Risikoergebnis UEB, neu_sl, stochastisch. */
+	@TableField(testColumn = "JL", testOption = TestOption.START, nachKomma = 0)
+	double reNeu_sl = DOUBLE_INIT;
+	/** Deckungsrückstellung ÜB, Lockin, Altbestand_sl */
+	@TableField(testColumn = "JM", testOption = TestOption.START, nachKomma = 0)
+	double drLockInAlt_sl = DOUBLE_INIT;
+	/** Deckungsrückstellung ÜB, Lockin, Neubestand_sl */
+	@TableField(testColumn = "JN", testOption = TestOption.START, nachKomma = 0)
+	double drLockInNeu_sl = DOUBLE_INIT;
+
+	
+	private double[] bwFiNeuAnArr_1;
+	private double[] bwFiNeuAnArr_2;
+	private double[] bwFiNeuAnArr_3;
+	private double[] bwFiNeuAnArr_4;
+	private int[] zpFaelligkeitArr_1;
+	private int[] zpFaelligkeitArr_2;
+	private int[] zpFaelligkeitArr_3;
+	private int[] zpFaelligkeitArr_4;
+	private double[] kuponEsgArr_1;
+	private double[] kuponEsgArr_2;
+	private double[] kuponEsgArr_3;
+	private double[] kuponEsgArr_4;
+	
 	/**
 	 * Konstruktion einer neuen Agg-Zeile.
 	 * 
@@ -954,16 +1117,28 @@ public class AggZeile {
 	public void berechnungLevel01(final int pfad) {
 		kuponEsgArr = fillArr(agg -> agg.kuponEsg, kuponEsgArr);
 		zpFaelligkeitArr = fillArrInt(agg -> agg.zpFaelligkeit, zpFaelligkeitArr);
+
+		// OW_LS
+		kuponEsgArr_1 = fillArr(agg -> agg.kuponEsg_1, kuponEsgArr_1);
+		kuponEsgArr_2 = fillArr(agg -> agg.kuponEsg_2, kuponEsgArr_2);
+		kuponEsgArr_3 = fillArr(agg -> agg.kuponEsg_3, kuponEsgArr_3);
+		kuponEsgArr_4 = fillArr(agg -> agg.kuponEsg_4, kuponEsgArr_4);
+		zpFaelligkeitArr_1 = fillArrInt(agg -> agg.zpFaelligkeit_1, zpFaelligkeitArr_1);
+		zpFaelligkeitArr_2 = fillArrInt(agg -> agg.zpFaelligkeit_2, zpFaelligkeitArr_2);
+		zpFaelligkeitArr_3 = fillArrInt(agg -> agg.zpFaelligkeit_3, zpFaelligkeitArr_3);
+		zpFaelligkeitArr_4 = fillArrInt(agg -> agg.zpFaelligkeit_4, zpFaelligkeitArr_4);
 		
 		// MIL_W.Schalesi
-				mmrCouponTriggerArr = fillArr(agg -> agg.mmrCouponTrigger, mmrCouponTriggerArr);
-				if (zeit > 0) {
-					if (Functions.sum(mmrCouponTriggerArr) >= 0)
-						mmrCouponTriggerBoolean = false;
-					else
-						mmrCouponTriggerBoolean = true;
-					mmrCouponTriggerArr[zeit] = mmrCouponTrigger;
-				}
+		mmrCouponTriggerArr = fillArr(agg -> agg.mmrCouponTrigger, mmrCouponTriggerArr);
+		if (zeit > 0) {
+			//if (Functions.sum(mmrCouponTriggerArr) >= 0)
+			// OW_LS 12.09.18: Es werden maximal die letzten 10 Jahre betrachtet
+			if (Functions.sum10(mmrCouponTriggerArr) >= 0)
+				mmrCouponTriggerBoolean = false;
+			else
+				mmrCouponTriggerBoolean = true;
+			mmrCouponTriggerArr[zeit] = mmrCouponTrigger;
+		}
 
 		spotVnVerhaltenEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).getSpotRlz(10);
 		//sdl: Wozu wird hier diese Variable verwendet?
@@ -974,11 +1149,80 @@ public class AggZeile {
 			rlz = KaModellierung.rlz(berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl(),
 					berechnung.laengeProjektionDr, zeit);
 			zpFaelligkeit = KaModellierung.zpFaelligkeit(zeit, rlz);
+			
+			//*** OW_LS Beginn Flexible FI Neuanlage***
+			/*if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isZeitabhFiNaRlz()) {
+				rlz_liqui = KaModellierung.rlz(berechnung.getZeitabhManReg().get(zeit).getFiNaRlz(), berechnung.laengeProjektionDr, zeit);
+				if (berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+					rlz_sonstiges = 0;
+					zpFaelligkeit_sonstiges = 0;
+				} else {
+					if (mmrCouponTriggerBoolean) {
+						rlz_sonstiges = KaModellierung.rlz(berechnung.getZeitunabhManReg().getFiNeuanlageRestlaufzeitAlternative(), berechnung.laengeProjektionDr, zeit);
+					} else {
+						rlz_sonstiges = KaModellierung.rlz(berechnung.getZeitunabhManReg().getFiNeuanlageRestlaufzeit(), berechnung.laengeProjektionDr, zeit);
+					}
+					zpFaelligkeit_sonstiges = KaModellierung.zpFaelligkeit(zeit, rlz_sonstiges);
+				}
+				zpFaelligkeit_liqui = KaModellierung.zpFaelligkeit(zeit, rlz_liqui);
+			} else {
+				rlz_liqui = 0;
+				rlz_sonstiges = 0;
+				zpFaelligkeit_liqui = 0;
+				zpFaelligkeit_sonstiges = 0;
+			}*/
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				if (mmrCouponTriggerBoolean) {
+					rlz_1 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzAlternativ().get(1), berechnung.laengeProjektionDr, zeit);
+					rlz_2 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzAlternativ().get(2), berechnung.laengeProjektionDr, zeit);
+					rlz_3 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzAlternativ().get(3), berechnung.laengeProjektionDr, zeit);
+					rlz_4 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzAlternativ().get(4), berechnung.laengeProjektionDr, zeit);
+				} else {
+					rlz_1 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzStandard().get(1),berechnung.laengeProjektionDr, zeit);
+					rlz_2 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzStandard().get(2),berechnung.laengeProjektionDr, zeit);
+					rlz_3 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzStandard().get(3),berechnung.laengeProjektionDr, zeit);
+					rlz_4 = KaModellierung.rlz(berechnung.getDynManReg().getfiNaRlzStandard().get(4),berechnung.laengeProjektionDr, zeit);
+				}
+				zpFaelligkeit_1 = KaModellierung.zpFaelligkeit(zeit, rlz_1);
+				zpFaelligkeit_2 = KaModellierung.zpFaelligkeit(zeit, rlz_2);
+				zpFaelligkeit_3 = KaModellierung.zpFaelligkeit(zeit, rlz_3);
+				zpFaelligkeit_4 = KaModellierung.zpFaelligkeit(zeit, rlz_4);
+			} else {
+				rlz_1 = 0;
+				rlz_2 = 0;
+				rlz_3 = 0;
+				rlz_4 = 0;
+				zpFaelligkeit_1 = 0;
+				zpFaelligkeit_2 = 0;
+				zpFaelligkeit_3 = 0;
+				zpFaelligkeit_4 = 0;
+			}			
+			//*** OW_LS Ende ***
+			
 		} else {
 			rlz = 0;
 			zpFaelligkeit = 0;
+			
+			//*** OW_LS Beginn Flexible FI Neuanlage***
+			rlz_1 = 0;
+			rlz_2 = 0;
+			rlz_3 = 0;
+			rlz_4 = 0;
+			zpFaelligkeit_1 = 0;
+			zpFaelligkeit_2 = 0;
+			zpFaelligkeit_3 = 0;
+			zpFaelligkeit_4 = 0;
+			//*** OW_LS Ende ***
 		}
 		zpFaelligkeitArr[zeit] = zpFaelligkeit;
+
+		//*** OW_LS Beginn Flexible FI Neuanlage***
+		zpFaelligkeitArr_1[zeit] = zpFaelligkeit_1;
+		zpFaelligkeitArr_2[zeit] = zpFaelligkeit_2;
+		zpFaelligkeitArr_3[zeit] = zpFaelligkeit_3;
+		zpFaelligkeitArr_4[zeit] = zpFaelligkeit_4;
+		//*** OW_LS Ende ***
+		
 		if (zeit != berechnung.zeitHorizont) {
 			rapVT = berechnung.getFiAusfall(zeit + 1).rapZinsen;
 		} else {
@@ -987,20 +1231,61 @@ public class AggZeile {
 
 		if (zeit == 0) {
 			kuponEsg = 0.0;
+			
+			//*** OW_LS Beginn Flexible FI Neuanlage***
+			kuponEsg_1 = 0.0;
+			kuponEsg_2 = 0.0;
+			kuponEsg_3 = 0.0;
+			kuponEsg_4 = 0.0;
+			//*** OW_LS Ende ***
+			
 		} else {
 			kuponEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz);
+			
+			//*** OW_LS Beginn Flexible FI Neuanlage***
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				kuponEsg_1 = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz_1);
+				kuponEsg_2 = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz_2);
+				kuponEsg_3 = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz_3);
+				kuponEsg_4 = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz_4);
+			} else {
+				kuponEsg_1 = 0;
+				kuponEsg_2 = 0;
+				kuponEsg_3 = 0;
+				kuponEsg_4 = 0;
+			}
+			//*** OW_LS Ende ***
+			
 		}
 		kuponEsgArr[zeit] = kuponEsg;
+
+		//*** OW_LS Beginn Flexible FI Neuanlage***
+		kuponEsgArr_1[zeit] = kuponEsg_1;
+		kuponEsgArr_2[zeit] = kuponEsg_2;
+		kuponEsgArr_3[zeit] = kuponEsg_3;
+		kuponEsgArr_4[zeit] = kuponEsg_4;
+		//*** OW_LS Ende ***
+		
 
 		kuponEsgII = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).getKuponRlz(1);
 		diskontEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).diskontFunktion;
 
 		// MIL_W.Schalesi
+		// OW_LS
 		if (zeit > 0) {
-			if (kuponEsg < berechnung.getZeitunabhManReg().getCouponTrigger()) {
-				mmrCouponTrigger = -1;
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				if ( MIL_Funktionen.OW_mittlererKupon(mmrCouponTriggerBoolean, kuponEsg_1, kuponEsg_2, kuponEsg_3, kuponEsg_4, berechnung.getDynManReg().getfiNaAnteilStandard(), 
+						berechnung.getDynManReg().getfiNaAnteilAlternativ()) < berechnung.getZeitunabhManReg().getCouponTrigger()) {
+					mmrCouponTrigger = -1;
+				} else {
+					mmrCouponTrigger = 1;
+				}
 			} else {
-				mmrCouponTrigger = 1;
+				if (kuponEsg < berechnung.getZeitunabhManReg().getCouponTrigger()) {
+					mmrCouponTrigger = -1;
+				} else {
+					mmrCouponTrigger = 1;
+				}
 			}
 		}
 
@@ -1068,6 +1353,16 @@ public class AggZeile {
 		cfFis = new double[berechnung.zeitHorizont + 1];
 		cfFiZeitschrittig = new double[berechnung.zeitHorizont + 1];
 
+		// OW_LS
+		bwFiNeuAnArr_1 = fillArr(agg -> agg.bwFiNeuAn_1, bwFiNeuAnArr_1);
+		bwFiNeuAnArr_2 = fillArr(agg -> agg.bwFiNeuAn_2, bwFiNeuAnArr_2);
+		bwFiNeuAnArr_3 = fillArr(agg -> agg.bwFiNeuAn_3, bwFiNeuAnArr_3);
+		bwFiNeuAnArr_4 = fillArr(agg -> agg.bwFiNeuAn_4, bwFiNeuAnArr_4);
+		kuponEsgArr_1[zeit] = kuponEsg_1;
+		kuponEsgArr_2[zeit] = kuponEsg_2;
+		kuponEsgArr_3[zeit] = kuponEsg_3;
+		kuponEsgArr_4[zeit] = kuponEsg_4;
+		
 		if (zeit == 0) {
 			// hier kann FI-CFs und FI-MW gerechnet werden (werte aus FiAusfall)!
 			cfFis[0] = 0.0;
@@ -1096,7 +1391,9 @@ public class AggZeile {
 			}
 			
 			// MIL_W.Schalesi
-			if (Functions.sum(mmrJueTriggerArr) >= 0){
+			// OW_LS 12.09.18: Es werden maximal die letzten 10 Jahre betrachtet
+			//if (Functions.sum(mmrJueTriggerArr) >= 0){
+			if (Functions.sum10(mmrJueTriggerArr) >= 0){
 				mmrJueTriggerBoolean = false;
 			}else{
 				mmrJueTriggerBoolean = true;
@@ -1121,9 +1418,44 @@ public class AggZeile {
 					rlz, zeit);
 			bwFiNeuAnArr[zeit] = bwFiNeuAn;
 
+
+			//*** OW_LS Beginn Flexible FI Neuanlage***
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				if (mmrCouponTriggerBoolean) {
+					bwFiNeuAn_1 = berechnung.getDynManReg().getfiNaAnteilAlternativ().get(1) * bwFiNeuAn;
+					bwFiNeuAn_2 = berechnung.getDynManReg().getfiNaAnteilAlternativ().get(2) * bwFiNeuAn;
+					bwFiNeuAn_3 = berechnung.getDynManReg().getfiNaAnteilAlternativ().get(3) * bwFiNeuAn;
+					bwFiNeuAn_4 = berechnung.getDynManReg().getfiNaAnteilAlternativ().get(4) * bwFiNeuAn;
+				} else {
+						bwFiNeuAn_1 = berechnung.getDynManReg().getfiNaAnteilStandard().get(1) * bwFiNeuAn;
+						bwFiNeuAn_2 = berechnung.getDynManReg().getfiNaAnteilStandard().get(2) * bwFiNeuAn;
+						bwFiNeuAn_3 = berechnung.getDynManReg().getfiNaAnteilStandard().get(3) * bwFiNeuAn;
+						bwFiNeuAn_4 = berechnung.getDynManReg().getfiNaAnteilStandard().get(4) * bwFiNeuAn;
+				}
+			} else {
+				bwFiNeuAn_1 = 0;
+				bwFiNeuAn_2 = 0;
+				bwFiNeuAn_3 = 0;
+				bwFiNeuAn_4 = 0;
+			}
+			bwFiNeuAnArr_1[zeit] = bwFiNeuAn_1;
+			bwFiNeuAnArr_2[zeit] = bwFiNeuAn_2;
+			bwFiNeuAnArr_3[zeit] = bwFiNeuAn_3;
+			bwFiNeuAnArr_4[zeit] = bwFiNeuAn_4;
+			//*** OW_LS Ende***
+			
+			
 			// jetzt kann CF_FI_s berechnet werten:
-			for (int i = 0; i <= berechnung.zeitHorizont; ++i) {
-				cfFis[i] = KaModellierung.cfFis(i, rlz, bwFiNeuAn, kuponEsg, zeit, 0.0);
+			//OW_LS Flexible FI Neuanlage
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				for (int i = 0; i <= berechnung.zeitHorizont; ++i) {
+					cfFis[i] = 	KaModellierung.cfFis(i, rlz_1, bwFiNeuAn_1, kuponEsg_1, zeit, 0.0) + KaModellierung.cfFis(i, rlz_2, bwFiNeuAn_2, kuponEsg_2, zeit, 0.0) +
+								KaModellierung.cfFis(i, rlz_3, bwFiNeuAn_3, kuponEsg_3, zeit, 0.0) + KaModellierung.cfFis(i, rlz_4, bwFiNeuAn_4, kuponEsg_4, zeit, 0.0);
+				}
+			} else {
+				for (int i = 0; i <= berechnung.zeitHorizont; ++i) {
+					cfFis[i] = KaModellierung.cfFis(i, rlz, bwFiNeuAn, kuponEsg, zeit, 0.0);
+				}
 			}
 
 			for (int i = 0; i < berechnung.zeitHorizont; ++i) {
@@ -1203,11 +1535,47 @@ public class AggZeile {
 			bwFiVerrechnung = KaModellierung.bwFiVerrechnung(zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr,
 					bwFiAkt, bwFiNeuAnArr, kedVerrechnungArr,
 					kedVjVerrechnenArr);
-
-			keFiNeuAnl = KaModellierung.keFiNeuAnl(bwFiNeuAnArr, kuponEsgArr,
-					zeit, berechnung.laengeProjektionDr,
-					zpFaelligkeitArr);
-			cfFiNeuAnl = KaModellierung.cfFiNeuAnl(keFiNeuAnl, zeit, zpFaelligkeitArr, bwFiNeuAnArr);
+			
+			//*** OW_LS Beginn
+			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+				keFiNeuAnl_1 = KaModellierung.keFiNeuAnl(bwFiNeuAnArr_1, kuponEsgArr_1, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr_1);
+				keFiNeuAnl_2 = KaModellierung.keFiNeuAnl(bwFiNeuAnArr_2, kuponEsgArr_2, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr_2);
+				keFiNeuAnl_3 = KaModellierung.keFiNeuAnl(bwFiNeuAnArr_3, kuponEsgArr_3, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr_3);
+				keFiNeuAnl_4 = KaModellierung.keFiNeuAnl(bwFiNeuAnArr_4, kuponEsgArr_4, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr_4);
+				cfFiNeuAnl_1 = KaModellierung.cfFiNeuAnl(keFiNeuAnl_1, zeit, zpFaelligkeitArr_1, bwFiNeuAnArr_1);
+				cfFiNeuAnl_2 = KaModellierung.cfFiNeuAnl(keFiNeuAnl_2, zeit, zpFaelligkeitArr_2, bwFiNeuAnArr_2);
+				cfFiNeuAnl_3 = KaModellierung.cfFiNeuAnl(keFiNeuAnl_3, zeit, zpFaelligkeitArr_3, bwFiNeuAnArr_3);
+				cfFiNeuAnl_4 = KaModellierung.cfFiNeuAnl(keFiNeuAnl_4, zeit, zpFaelligkeitArr_4, bwFiNeuAnArr_4);
+			} else {
+				keFiNeuAnl_1 = 0;
+				keFiNeuAnl_2 = 0;
+				keFiNeuAnl_3 = 0;
+				keFiNeuAnl_4 = 0;
+				cfFiNeuAnl_1 = 0;
+				cfFiNeuAnl_2 = 0;
+				cfFiNeuAnl_3 = 0;
+				cfFiNeuAnl_4 = 0;
+			}
+			//*** OW_LS Ende ***
+			
+			// OW_M.Bartnicki
+			if (berechnung.isMillimanRechnen()){
+				if(berechnung.getDynManReg().isFiNAmehrereRLZ()) {
+					keFiNeuAnl = keFiNeuAnl_1 + keFiNeuAnl_2 + keFiNeuAnl_3 + keFiNeuAnl_4;
+					cfFiNeuAnl = cfFiNeuAnl_1 + cfFiNeuAnl_2 + cfFiNeuAnl_3 + cfFiNeuAnl_4;
+				// }else if(mmrCouponTriggerBoolean){ <-- Dieser Fall muss nicht betrachtet werden, da die Funktion: KaModellierung.keFiNeuAnl() die rlz gar nicht verwendet!
+				} else {	
+					//Standard Fall
+					keFiNeuAnl = KaModellierung.keFiNeuAnl(bwFiNeuAnArr, kuponEsgArr, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr);
+					cfFiNeuAnl = KaModellierung.cfFiNeuAnl(keFiNeuAnl, zeit, zpFaelligkeitArr, bwFiNeuAnArr);
+				}
+		    }else{
+				//Standard Fall
+				keFiNeuAnl = KaModellierung.keFiNeuAnl(bwFiNeuAnArr, kuponEsgArr, zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr);
+				cfFiNeuAnl = KaModellierung.cfFiNeuAnl(keFiNeuAnl, zeit, zpFaelligkeitArr, bwFiNeuAnArr);
+			}
+		
+			
 			cfFi = KaModellierung.cfFi(cfFiNeuAnl, cfFiAkt);
 			keFi = KaModellierung.keFi(keFiAkt, keFiNeuAnl, kedVjVerrechnen);
 			bwFiGesamtJe = KaModellierung.bwFiGesamtJe(bwFiVerrechnung, cfFi, keFi, rapVT, vg.rapVT);
@@ -1262,6 +1630,11 @@ public class AggZeile {
 		// pauschale Initialisierungen für Summationen (auch Zeit 0)
 		zzrAlt = 0.0;
 		zzrNeu = 0.0;
+
+		//OW_D.Hohmann
+		zzrAlt_sl = 0.0;
+		zzrNeu_sl = 0.0;
+
 		zzrNueb = 0.0;
 		drVorDeklAgg = 0.0;
 		drVorDeklUebAgg = 0.0;
@@ -1277,16 +1650,31 @@ public class AggZeile {
 			cfRvstochAgg = 0.0;
 			ueEalt = 0.0;
 			ueEneu = 0.0;
+
+			//OW_D.Hohmann
+			ueEalt_sl = 0.0;
+			ueEneu_sl = 0.0;
+			
 			ueEnueb = 0.0;
 			zuebCashflowAgg = 0.0;
 			optionenCashflowAgg = 0.0;
 			beitragRohUebAgg = 0.0;
 			rmzUebAlt = 0.0;
 			rmzUebNeu = 0.0;
+
+			//OW_D.Hohmann
+			rmzUebAlt_sl = 0.0;
+			rmzUebNeu_sl = 0.0;
+
 			rmzNueb = 0.0;
 			ziRaZuStochAgg = 0.0;
 			reAlt = 0.0;
 			reNeu = 0.0;
+
+			//OW_D.Hohmann
+			reAlt_sl = 0.0;
+			reNeu_sl = 0.0;
+
 			risikoUebStochAgg = 0.0;
 			lGarStochAgg = 0.0;
 		}
@@ -1330,6 +1718,29 @@ public class AggZeile {
 					}
 				}
 				drVorDeklUebAgg += z.drVorDekl;
+
+				//OW_D.Hohmann
+				if (z.altNeuBestand.equals("a_sl")) {
+					// Speuialfall "alt_sl", siehe
+					// SummeUeberRZGzumGleichenZPWennAltNeu
+					zzrAlt_sl += z.zzrJ;
+					if (zeit > 0) {
+						ueEalt_sl += z.kostenUebStoch;
+						rmzUebAlt_sl += z.rmZTarif;
+						reAlt_sl += z.risikoUebStoch;
+					}
+				}
+				if (z.altNeuBestand.equals("n_sl")) {
+					// Speuialfall "neu", siehe
+					// SummeUeberRZGzumGleichenZPWennAltNeu
+					zzrNeu_sl += z.zzrJ;
+					if (zeit > 0) {
+						ueEneu_sl += z.kostenUebStoch;
+						rmzUebNeu_sl += z.rmZTarif;
+						reNeu_sl += z.risikoUebStoch;
+					}
+				}	
+			
 			}
 			if (z.uebNueb.equals("NUEB")) {
 				// Additionen nur UEB
@@ -1352,7 +1763,11 @@ public class AggZeile {
 				berechnung.getZeitunabhManReg().getMonatZahlung(), zeit, berechnung.laengeProjektionDr);
 		aufzinsungGesamt = KaModellierung.aufzinsung(lGesAgg, jaehrlZinsEsg,
 				berechnung.getZeitunabhManReg().getMonatZahlung(), zeit, berechnung.laengeProjektionDr);
-		zzrGesamt = Rohueberschuss.zzrGesamt(zzrAlt, zzrNeu, zzrNueb);
+		
+		//OW_D.Hohmann
+		//zzrGesamt = Rohueberschuss.zzrGesamt(zzrAlt, zzrNeu, zzrNueb);
+		zzrGesamt = OW_Funktionen.zzrGesamt(zzrAlt, zzrNeu, zzrAlt_sl, zzrNeu_sl, zzrNueb);
+		
 
 		if (zeit > 0) {
 			ueEaltNoGcr = Rohueberschuss.kostenueberschussBestand(ueEalt,
@@ -1360,16 +1775,33 @@ public class AggZeile {
 			ueEneuNoGcr = Rohueberschuss.kostenueberschussBestand(ueEneu,
 					berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
 
+			//OW_D.Hohmann
+			ueEaltNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEalt_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
+			ueEneuNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEneu_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());			
+			
 			deltaZzrUebAlt = Rohueberschuss.deltaZzr(zzrAlt, vg.zzrAlt);
 			deltaZzrUebNeu = Rohueberschuss.deltaZzr(zzrNeu, vg.zzrNeu);
+
+			//OW_D.Hohmann
+			deltaZzrUebAlt_sl = Rohueberschuss.deltaZzr(zzrAlt_sl, vg.zzrAlt_sl);
+			deltaZzrUebNeu_sl = Rohueberschuss.deltaZzr(zzrNeu_sl, vg.zzrNeu_sl);
+			
 			deltaZzrNueb = Rohueberschuss.deltaZzr(zzrNueb, vg.zzrNueb);
 
-			gcrUeB = KaModellierung.cfUebrEng(ueEalt, ueEneu, ueEaltNoGcr, ueEneuNoGcr);
+			//OW_D.Hohmann		
+			//gcrUeB = KaModellierung.cfUebrEng(ueEalt, ueEneu, ueEaltNoGcr, ueEneuNoGcr);
+			gcrUeB = OW_Funktionen.cfUebrEng(ueEalt, ueEneu, ueEaltNoGcr, ueEneuNoGcr, ueEalt_sl, ueEneu_sl, ueEaltNoGcr_sl, ueEneuNoGcr_sl);
+			
 
 			rmzUebGesamtAlt = Rohueberschuss.rmZGesamt(rmzUebAlt, deltaZzrUebAlt);
 			rmzUebGesamtNeu = Rohueberschuss.rmZGesamt(rmzUebNeu, deltaZzrUebNeu);
+			
+			//OW_D.Hohmann		
+			rmzUebGesamtAlt_sl = Rohueberschuss.rmZGesamt(rmzUebAlt_sl, deltaZzrUebAlt_sl);
+			rmzUebGesamtNeu_sl = Rohueberschuss.rmZGesamt(rmzUebNeu_sl, deltaZzrUebNeu_sl);
+						
 			rmzNuebGesamt = Rohueberschuss.rmZGesamt(rmzNueb, deltaZzrNueb);
-
+			
 			anteilLobsKaStress = KaModellierung.anteilLobsKaStress(rzgZeilen, vg.szenarioId, vg.drLockInAgg, vg.sueAf,
 					vg.zzrGesamt);
 
@@ -1388,18 +1820,19 @@ public class AggZeile {
 					steuerVjAufgezinst, aufzinsungcfEvuRvu, cashflowAufgezinst, zinsen, rueckZahlung, cfKredit, gcrUeB,
 					aufwendungenKa);
 
-			mindestkapitalertragLvrgAltNeu = Rohueberschuss.mindestkapitalertragLvrgAltNeu(
-					berechnung.getZeitunabhManReg().getSchalterVerrechnungLebensversicherungsreformgesetz(), keRlsI,
-					rmzUebGesamtAlt, rmzUebGesamtNeu, rmzNuebGesamt, reAlt, reNeu, risikoUebStochAgg, ueEaltNoGcr,
-					ueEneuNoGcr, ueEnueb, jueZiel, ziRaZuStochAgg, zinsen);
+			//OW_D.Hohmann
+			//mindestkapitalertragLvrgAltNeu = Rohueberschuss.mindestkapitalertragLvrgAltNeu(berechnung.getZeitunabhManReg().getSchalterVerrechnungLebensversicherungsreformgesetz(), keRlsI, rmzUebGesamtAlt, rmzUebGesamtNeu, rmzNuebGesamt, reAlt, reNeu, risikoUebStochAgg, ueEaltNoGcr, ueEneuNoGcr, ueEnueb, jueZiel, ziRaZuStochAgg, zinsen);
+			mindestkapitalertragLvrgAltNeu = OW_Funktionen.mindestkapitalertragLvrgAltNeu(berechnung.getZeitunabhManReg().getSchalterVerrechnungLebensversicherungsreformgesetz(), keRlsI, rmzUebGesamtAlt, rmzUebGesamtNeu, rmzUebGesamtAlt_sl, rmzUebGesamtNeu_sl,rmzNuebGesamt,
+					reAlt, reNeu, reAlt_sl, reNeu_sl, risikoUebStochAgg, ueEaltNoGcr, ueEneuNoGcr, ueEaltNoGcr_sl, ueEneuNoGcr_sl, ueEnueb, jueZiel, ziRaZuStochAgg, zinsen);
+			
 
 			final double arapMieten = zeit == 1 ? berechnung.arapMieten : 0.0;
 			bwVorRls = KaModellierung.bwVorRls(bwFiGesamtJe, bwReRlsPlan, bwEqRlsI, cfFi, keMieten, arapMieten, keDiv,
 					cfOhneKa);
 			mwVorRls = KaModellierung.mwVorRls(fiMw, mwReVorRls, mwEqVorRls, cfFi, keMieten, arapMieten, keDiv,
 					cfOhneKa);
-			rzMittel = KaModellierung.rzMittel(zeit, berechnung.laengeProjektionDr, rmzUebAlt, rmzUebNeu, rmzNueb,
-					vg.hgbDrAgg, vg.drLockInAgg, drVorDeklAgg);
+			//OW_D.Hohmann
+			rzMittel = KaModellierung.rzMittel(zeit, berechnung.laengeProjektionDr, rmzUebAlt + rmzUebAlt_sl, rmzUebNeu + rmzUebNeu_sl, rmzNueb, vg.hgbDrAgg, vg.drLockInAgg, drVorDeklAgg);
 		}
 		aKaAufwendungen = KaModellierung.aKaAufwendungen(zeit, hgbDrAgg, drVorDeklAgg);
 		aVN = KaModellierung.aVn(zeit, kAgg, bAgg, kStochAgg, bStochAgg);
@@ -1543,32 +1976,68 @@ public class AggZeile {
 					vg.ertragsSteuerLs, vg.kredit, berechnung.getZeitunabhManReg().getMonatZahlung());
 			mwEqRlsII = KaModellierung.mwEqRlsII(aEqRlsII, mwEqVorRls);
 			cfEqRlsII = KaModellierung.cfEqRlsII(aEqRlsII, mwEqVorRls);
-			kapitalertragAnrechenbar = Rohueberschuss.kapitalertragAnrechenbar(zeit, nvz, drVorDeklUebAgg,
-					vg.drLockInAggWennLoB, zzrAlt + zzrNeu, vg.zzrAlt + vg.zzrNeu, vg.nfRfB);
 
+			//OW.D_Hohmann
+			//kapitalertragAnrechenbar = Rohueberschuss.kapitalertragAnrechenbar(zeit, nvz, drVorDeklUebAgg, vg.drLockInAggWennLoB, zzrAlt + zzrNeu, vg.zzrAlt + vg.zzrNeu, vg.nfRfB);
+			kapitalertragAnrechenbar = Rohueberschuss.kapitalertragAnrechenbar(zeit, nvz, drVorDeklUebAgg, vg.drLockInAggWennLoB, zzrAlt + zzrNeu + zzrAlt_sl + zzrNeu_sl, vg.zzrAlt + vg.zzrNeu + vg.zzrAlt_sl + vg.zzrNeu_sl, vg.nfRfB);
+			
 			bwEqRlsII = KaModellierung.bwEqRlsII(aEqRlsII, bwEqRlsI);
-			rohueb = Rohueberschuss.rohueb(keVerrechnung, rmzUebGesamtAlt + rmzUebGesamtNeu, rmzNuebGesamt,
-					reAlt + reNeu, risikoUebStochAgg, ueEaltNoGcr + ueEneuNoGcr, ueEnueb, aufwendungenKa, zinsen);
+			
+			//OW.D_Hohmann
+			//rohueb = Rohueberschuss.rohueb(keVerrechnung, rmzUebGesamtAlt + rmzUebGesamtNeu, rmzNuebGesamt, reAlt + reNeu, risikoUebStochAgg, ueEaltNoGcr + ueEneuNoGcr, ueEnueb, aufwendungenKa, zinsen);
+			rohueb = Rohueberschuss.rohueb(keVerrechnung, rmzUebGesamtAlt + rmzUebGesamtNeu + rmzUebGesamtAlt_sl + rmzUebGesamtNeu_sl, rmzNuebGesamt, reAlt + reNeu + reAlt_sl + reNeu_sl, risikoUebStochAgg, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, ueEnueb, aufwendungenKa, zinsen);
 			rohuebArr[zeit] = rohueb;
 
-			mindZf = Rohueberschuss.mindZf(kapitalertragAnrechenbar, deltaZzrUebAlt + rmzUebAlt, reAlt, ueEaltNoGcr,
-					vg.drLockInAlt, vg.zzrAlt, vg.sueAfAlt, deltaZzrUebNeu + rmzUebNeu, reNeu, ueEneuNoGcr,
-					vg.drLockInNeu, vg.zzrNeu, vg.sueAfNeu);
+			//OW_D.Hohmann
+			//mindZf = Rohueberschuss.mindZf(kapitalertragAnrechenbar, deltaZzrUebAlt + rmzUebAlt, reAlt, ueEaltNoGcr, vg.drLockInAlt, vg.zzrAlt, vg.sueAfAlt, deltaZzrUebNeu + rmzUebNeu, reNeu, ueEneuNoGcr, vg.drLockInNeu, vg.zzrNeu,vg.sueAfNeu);
+			mindZf = OW_Funktionen.mindZf(kapitalertragAnrechenbar, deltaZzrUebAlt + rmzUebAlt, reAlt, ueEaltNoGcr, vg.drLockInAlt, vg.zzrAlt, vg.sueAfAlt, deltaZzrUebAlt_sl + rmzUebAlt_sl, reAlt_sl, ueEaltNoGcr_sl, vg.drLockInAlt_sl, vg.zzrAlt_sl, vg.sueAfAlt_sl, deltaZzrUebNeu + rmzUebNeu, reNeu, ueEneuNoGcr, vg.drLockInNeu, vg.zzrNeu, vg.sueAfNeu, deltaZzrUebNeu_sl + rmzUebNeu_sl, reNeu_sl, ueEneuNoGcr_sl, vg.drLockInNeu_sl, vg.zzrNeu_sl, vg.sueAfNeu_sl);
+									
 
 			mindZfGes = Rohueberschuss.mindZfGes(mindZf, vg.mindZfKk);
 
-			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isP_RohUebTriggerRechnen()) {
-				rfBZuf = Rohueberschuss.jUERfBZuf(2, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr,
-						vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-						berechnung.getDynManReg().getp_RohUebWerte().get(szenarioId),
-						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-						keVerrechnung, kapitalertragAnrechenbar);
-			} else {
-				rfBZuf = Rohueberschuss.jUERfBZuf(2, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr,
-						vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-						berechnung.getZeitabhManReg().get(zeit).getRohUeb(),
+			// OW_M.Bartnicki
+			// OW_L.Schlenke
+			zusatzoption_UEB_ZielPJ = MIL_Funktionen.ow_Zielbeteiligung_ZielPJ(berechnung.szenario, szenarioId, vg.zusatzoption_UEB_SzenarioID ,vg.zusatzoption_UEB_ZielPJ, pfad, zeit, berechnung.laengeProjektionDr, 
+					berechnung.getDynManReg().getUEB_Trigger_Crisis_Property(), berechnung.getDynManReg().getUEB_Trigger_Crisis_Equity(), berechnung.getDynManReg().getUEB_Trigger_Crisis_Interest(), berechnung.getDynManReg().getUEB_Laufzeit_Crisis_Interest(), 
+					berechnung.getDynManReg().getUEB_Dauer_Crisis_Property(), berechnung.getDynManReg().getUEB_Dauer_Crisis_Equity(), berechnung.getDynManReg().getUEB_Dauer_Crisis_Interest(),
+					berechnung.getDynManReg().getCrisis_Property_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Equity_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Interest_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Spread_Stress_PJStart());
+			
+			zusatzoption_UEB_SzenarioID = MIL_Funktionen.ow_Zielbeteiligung_Shock_SzenarioID(berechnung.szenario, szenarioId, vg.zusatzoption_UEB_SzenarioID, vg.zusatzoption_UEB_ZielPJ, pfad, zeit, berechnung.laengeProjektionDr,
+					berechnung.getDynManReg().getUEB_Trigger_Crisis_Property(), berechnung.getDynManReg().getUEB_Trigger_Crisis_Equity(), berechnung.getDynManReg().getUEB_Trigger_Crisis_Interest(), berechnung.getDynManReg().getUEB_Laufzeit_Crisis_Interest(),
+					berechnung.getDynManReg().getUEB_Dauer_Crisis_Property(), berechnung.getDynManReg().getUEB_Dauer_Crisis_Equity(), berechnung.getDynManReg().getUEB_Dauer_Crisis_Interest(),
+					berechnung.getDynManReg().getCrisis_Property_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Equity_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Interest_Stress_PJStart(), berechnung.getDynManReg().getCrisis_Spread_Stress_PJStart());
+					
+
+			// OW_M.Bartnicki
+			// OW_L.Schlenke
+			if(berechnung.isMillimanRechnen() && (berechnung.getDynManReg().isP_RohUebTriggerRechnen() || berechnung.getDynManReg().isflexUEBRechnen() || berechnung.getDynManReg().isP_RohUebTrigger_Op_An_Trigger())) {
+				if(berechnung.getDynManReg().isP_RohUebTriggerRechnen()) {
+					zielBeteiligungssatzRohueb_OW = berechnung.getDynManReg().getp_RohUebWerte().get(szenarioId);
+				}else{
+					if(berechnung.getDynManReg().isflexUEBRechnen()) {
+						zielBeteiligungssatzRohueb_OW = MIL_Funktionen.ow_zielbeteiligung_rohUEB(rueAgg, kueAgg, drVorDeklAgg, berechnung.getDynManReg().getflexUEBGrenzen().get(1), berechnung.getDynManReg().getflexUEBGrenzen().get(2), berechnung.getDynManReg().getflexUEBGrenzen().get(3), berechnung.getDynManReg().getflexUEBGrenzen().get(4), berechnung.getDynManReg().getflexUEBAnteile().get(1), berechnung.getDynManReg().getflexUEBAnteile().get(2), berechnung.getDynManReg().getflexUEBAnteile().get(3), berechnung.getDynManReg().getflexUEBAnteile().get(4));
+					}else {
+						zielBeteiligungssatzRohueb_OW = MIL_Funktionen.ow_zielbeteiligung_Shock_UEB(zusatzoption_UEB_SzenarioID, berechnung.getZeitabhManReg().get(zeit).getRohUeb(), berechnung.getDynManReg().getUEB_Satz_Crisis_Property(),berechnung.getDynManReg().getUEB_Satz_Crisis_Equity(),berechnung.getDynManReg().getUEB_Satz_Crisis_Interest());
+					}
+				}			
+			}else {
+				zielBeteiligungssatzRohueb_OW = berechnung.getZeitabhManReg().get(zeit).getRohUeb();
+			}
+
+			
+			// OW_M.Bartnicki: rfBZuf
+			//OW.D_Hohmann
+			if(berechnung.isMillimanRechnen() && berechnung.getDynManReg().isUebTrigger_aRechnen()) {
+				rfBZuf = MIL_Funktionen.mil_jUERfBZuf(2, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr +ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW,
+						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
+						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar,
+						berechnung.getZeitabhManReg().get(zeit).getdeltaNvz(), vg.eigenkapitalFortschreibung,
+						berechnung.getZeitunabhManReg().getSteuersatz(),
+						berechnung.getZeitunabhManReg().isiJuez(), vg.jUeZielerhoehung, nvz);
+			}else {
+				rfBZuf = Rohueberschuss.jUERfBZuf(2, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW,
 						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
 						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
 						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
@@ -1576,82 +2045,52 @@ public class AggZeile {
 			}	
 			rfBZufArr[zeit] = rfBZuf;
 
-			// MIL_W.Schalesi
-			if (berechnung.isMillimanRechnen() && berechnung.getDynManReg().isP_RohUebTriggerRechnen()) {
-				nfRfB56b = Rohueberschuss.jUERfBZuf(3, zeit, rohuebArr, mindZfGes, mindZf, jueZiel,
-						ueEaltNoGcr + ueEneuNoGcr, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-						berechnung.getDynManReg().getp_RohUebWerte().get(szenarioId),
-						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-						keVerrechnung, kapitalertragAnrechenbar);
-			} else {
-				nfRfB56b = Rohueberschuss.jUERfBZuf(3, zeit, rohuebArr, mindZfGes, mindZf, jueZiel,
-						ueEaltNoGcr + ueEneuNoGcr, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-						berechnung.getZeitabhManReg().get(zeit).getRohUeb(),
-						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-						keVerrechnung, kapitalertragAnrechenbar);
+			// OW_M.Bartnicki: nfRfB56b
+			//OW.D_Hohmann
+			if(berechnung.isMillimanRechnen() && berechnung.getDynManReg().isUebTrigger_aRechnen()) {
+				nfRfB56b = MIL_Funktionen.mil_jUERfBZuf(3, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW,
+			berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
+			berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
+			berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar,
+			berechnung.getZeitabhManReg().get(zeit).getdeltaNvz(), vg.eigenkapitalFortschreibung,
+			berechnung.getZeitunabhManReg().getSteuersatz(),
+			berechnung.getZeitunabhManReg().isiJuez(), vg.jUeZielerhoehung, nvz);
+			}else {
+				nfRfB56b = Rohueberschuss.jUERfBZuf(3, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW, 
+						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), 
+						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf, 
+						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg,
+						vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar);
 			}
 			nfRfB56bArr[zeit] = nfRfB56b;
 
-			// MIL_W.Schalesi - Berechnung vom Jahresueberschuss
-				// nach Schalter
-				if (berechnung.isMillimanRechnen()) {
-					if (berechnung.getDynManReg().isP_RohUebTriggerRechnen()) {
-						if (berechnung.getDynManReg().isUebTrigger_aRechnen()) {
-							jue = MIL_Funktionen.mil_jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
-									berechnung.getDynManReg().getp_RohUebWerte().get(szenarioId),
-									berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-									berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar,
-									berechnung.getZeitabhManReg().get(zeit).getdeltaNvz(), vg.eigenkapitalFortschreibung,
-									berechnung.getZeitunabhManReg().getSteuersatz(),
-									berechnung.getZeitunabhManReg().isiJuez(), vg.jUeZielerhoehung, nvz);
-						} else {
-							jue = Rohueberschuss.jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr,
-									vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-									berechnung.getDynManReg().getp_RohUebWerte().get(szenarioId),
-									berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-									berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-									berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-									keVerrechnung, kapitalertragAnrechenbar);
-						}
-					} else {
-						if (berechnung.getDynManReg().isUebTrigger_aRechnen()) {
-							jue = MIL_Funktionen.mil_jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
-									berechnung.getZeitabhManReg().get(zeit).getRohUeb(),
-									berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-									berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar,
-									berechnung.getZeitabhManReg().get(zeit).getdeltaNvz(), vg.eigenkapitalFortschreibung,
-									berechnung.getZeitunabhManReg().getSteuersatz(),
-									berechnung.getZeitunabhManReg().isiJuez(), vg.jUeZielerhoehung, nvz);
-						} else { //originale Formel
-							jue = Rohueberschuss.jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr,
-									vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-									berechnung.getZeitabhManReg().get(zeit).getRohUeb(),
-									berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-									berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-									berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-									keVerrechnung, kapitalertragAnrechenbar);
-						}
-					}
-				} else { //originale Formel
-					jue = Rohueberschuss.jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr,
-						vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie, // zwei Parameter im Original
-						berechnung.getZeitabhManReg().get(zeit).getRohUeb(),
-						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(),
-						berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
-						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB,
-						keVerrechnung, kapitalertragAnrechenbar);
-				}
+			
+			// OW_M.Bartnicki: jue
+			//OW.D_Hohmann
+			if(berechnung.isMillimanRechnen() && berechnung.getDynManReg().isUebTrigger_aRechnen()) {
+				jue = MIL_Funktionen.mil_jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW,
+						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf,
+						berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg, vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar,
+						berechnung.getZeitabhManReg().get(zeit).getdeltaNvz(), vg.eigenkapitalFortschreibung,
+						berechnung.getZeitunabhManReg().getSteuersatz(),
+						berechnung.getZeitunabhManReg().isiJuez(), vg.jUeZielerhoehung, nvz);
+			}else {
+				jue = Rohueberschuss.jUERfBZuf(1, zeit, rohuebArr, mindZfGes, mindZf, jueZiel, ueEaltNoGcr + ueEneuNoGcr + ueEaltNoGcr_sl + ueEneuNoGcr_sl, vg.fRfBFrei, rfBZufArr, berechnung.vuHistorie,
+						zielBeteiligungssatzRohueb_OW, 
+						berechnung.getZeitabhManReg().get(zeit).getRfbEntnahme(), berechnung.getZeitabhManReg().get(zeit).getSueafEntnahme(), vg.sueAf, berechnung.getZeitunabhManReg().getStrategie(), nfRfB56bArr, drVorDeklUebAgg,
+						vg.drLockInAggWennLoB, keVerrechnung, kapitalertragAnrechenbar);
+			}
 				
-				// MIL_W.Schalesi
-				if (jue < Math.abs(0.01)) {
-					mmrJueTrigger = -1;
-				} else {
-					mmrJueTrigger = 1;
-				}
+			
+			// MIL_W.Schalesi
+			if (jue < Math.abs(0.01)) {
+				mmrJueTrigger = -1;
+			} else {
+				mmrJueTrigger = 1;
+			}
 							
 			jUeZielerhoehung = Rohueberschuss.jUeZielerhoehung(zeit, berechnung.getZeitunabhManReg().isiJuez(), jueZiel, jue, berechnung.getZeitunabhManReg().getStrategie());
 			
@@ -1696,9 +2135,11 @@ public class AggZeile {
 			} else {
 				fRfBFrei = 0.0;
 			}
-			deklRest = Deklaration.deklRest(berechnung.getZeitunabhManReg().getDeklarationsMethode(), dekl,
-					berechnung.getZeitabhManReg().get(zeit).getGrundUeberschuss(), reAlt, reNeu, ueEaltNoGcr,
-					ueEneuNoGcr);
+			
+			//OW_D.Hohmann
+			deklRest = Deklaration.deklRest(berechnung.getZeitunabhManReg().getDeklarationsMethode(), dekl, 
+					berechnung.getZeitabhManReg().get(zeit).getGrundUeberschuss(), reAlt + reAlt_sl, reNeu + reNeu_sl, ueEaltNoGcr + ueEaltNoGcr_sl, ueEneuNoGcr + ueEneuNoGcr_sl);
+
 			deklZins = Deklaration.deklZins(berechnung.getZeitunabhManReg().getDeklarationsMethode(), dekl, deklRest);
 			vzGes = Deklaration.vzGes(deklZins, rzgZeilen);
 		}
@@ -1717,6 +2158,11 @@ public class AggZeile {
 		drLockInAggWennLoB = 0.0;
 		drLockInAlt = 0.0;
 		drLockInNeu = 0.0;
+
+		//OW_D.Hohmann
+		drLockInAlt_sl = 0.0;
+		drLockInNeu_sl = 0.0;
+
 		barAgg = 0.0;
 		drGesAgg = 0.0;
 		sueAFZufFRfBUeberlaufAgg = 0.0;
@@ -1724,6 +2170,11 @@ public class AggZeile {
 		sueAFEntnahmeAgg = 0.0;
 		sueAfAlt = 0.0;
 		sueAfNeu = 0.0;
+
+		//OW_D.Hohmann
+		sueAfAlt_sl = 0.0;
+		sueAfNeu_sl = 0.0;
+
 		lockInAgg = 0.0;
 		if (zeit > 0) {
 			rohuebKpK = 0.0;
@@ -1758,6 +2209,21 @@ public class AggZeile {
 					drLockInNeu += rzg.drLockInRzg;
 					sueAfNeu += rzg.sUeAfRzg;
 				}
+				
+				//OW_D.Hohmann
+				if (rzg.altNeuBestand.equals("a_sl")) {
+					// Speuialfall "alt_sl", siehe
+					// SummeUeberRZGzumGleichenZPWennAltNeu
+					drLockInAlt_sl += rzg.drLockInRzg;
+					sueAfAlt_sl += rzg.sUeAfRzg;
+				}
+				if (rzg.altNeuBestand.equals("n_sl")) {
+					// Speuialfall "neu_sl", siehe
+					// SummeUeberRZGzumGleichenZPWennAltNeu
+					drLockInNeu_sl += rzg.drLockInRzg;
+					sueAfNeu_sl += rzg.sUeAfRzg;
+				}
+						
 				drLockInAggWennLoB += rzg.drLockInRzg;
 			}
 		}
@@ -1805,7 +2271,10 @@ public class AggZeile {
 					jaehrlZinsEsg, berechnung.getZeitunabhManReg().getMonatZahlung(), zeit,
 					berechnung.laengeProjektionDr);
 		}
-		sueAf = Rohueberschuss.sueAf(sueAfAlt, sueAfNeu);
+
+		//OW_D.Hohmann
+		//sueAf = Rohueberschuss.sueAf(sueAfAlt, sueAfNeu);
+		sueAf = OW_Funktionen.sueAf(sueAfAlt, sueAfNeu, sueAfAlt_sl, sueAfNeu_sl);
 		nfRfB = Rohueberschuss.nfRfB(sueAf, fRfBFrei);
 
 		for (RzgZeile rzg : rzgZeilen) {

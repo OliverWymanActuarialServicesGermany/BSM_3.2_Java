@@ -2,7 +2,10 @@ package de.gdv.bsm.vu.module;
 
 import static de.gdv.bsm.vu.module.Functions.nanZero;
 
+import java.util.Map;
+
 import de.gdv.bsm.intern.params.VUHistorie;
+import de.gdv.bsm.intern.szenario.Szenario;
 
 public class MIL_Funktionen {
 
@@ -474,5 +477,288 @@ public class MIL_Funktionen {
 			return bwFiVerrechnung + bwFi;
 
 		}
+	}
+	/**
+	 * Funktionsname in Excel:OW_Zielbeteiligung_RohUEB
+	 * Berechnet die Zielbeteiligung am Rohueberschuss anhand der Kennzahl (Risikoüberschüsse + Kostenüberschüsse)/Deckungsrueckstellung.
+	 * @param risikoUEB
+	 * 				Risikoüberschüsse
+	 * @param kostenUEB
+	 * 				Kostenüberschüsse
+	 * @param DR
+	 * 				Deckungsrückstellung
+	 * @param level_mitte
+	 * 				Zielbeteiligung am Rohüberschuss aus den zeitabh. Managementregeln
+	 * @return
+	 */
+	public static double ow_zielbeteiligung_rohUEB(final double risikoUEB, final double kostenUEB, final double DR,
+			final double grenze_unten, final double grenze_untenMitte, final double grenze_mitteOben, final double grenze_oben,
+			final double anteil_unten, final double anteil_untenMitte, final double anteil_mitteOben, final double anteil_oben) {
+	    	    
+			double theta = 0.0;
+			double return_value = 0.0;
+			double scale = 10000.0;
+			
+		    if (DR != 0) {
+		        theta = (risikoUEB + kostenUEB) / DR;
+		    } else {
+		        theta = 0;
+		    }
+	    
+		    if (theta < grenze_unten) {
+		    	return_value = anteil_unten;
+		    } else if ((theta >= grenze_unten) && (theta < grenze_untenMitte)) {
+		    	return_value = anteil_unten + (anteil_untenMitte - anteil_unten) * (theta - grenze_unten) / (grenze_untenMitte - grenze_unten);
+		    } else if ((theta >= grenze_untenMitte) && (theta <= grenze_mitteOben)) {
+		    	return_value = anteil_untenMitte + (anteil_mitteOben - anteil_untenMitte) * (theta - grenze_untenMitte) / (grenze_mitteOben - grenze_untenMitte);
+		    } else if ((theta > grenze_mitteOben) && (theta <= grenze_oben)) {
+		    	return_value = anteil_mitteOben + (anteil_oben - anteil_mitteOben) * (theta - grenze_mitteOben)  / (grenze_oben - grenze_mitteOben);
+		    } else if (theta > grenze_oben) {
+		    	return_value = anteil_oben;
+		    } else {
+		    	return_value = 0;
+		    }
+		    
+		    return Math.round(return_value * scale) / scale;
+			
+		}
+	
+	
+	/**
+	 * Funktionsname in Excel:OW_mittlereKupon
+	 * Berechnet den gewichteten mittleren Kupon für die Bestimmung des Kupon Triggers
+	 * 
+	 * @param TriggerAlternativ
+	 * @param Kupon1
+	 * @param Kupon2
+	 * @param Kupon3
+	 * @param Kupon4
+	 * @param NaAnteilStandard
+	 * @param NaAnteilAlternativ
+	 * @return
+	 */
+	public static double OW_mittlererKupon(final boolean TriggerAlternativ, final double Kupon1, final double Kupon2, final double Kupon3, final double Kupon4, 
+										   final Map<Integer, Double> NaAnteilStandard, final Map<Integer, Double> NaAnteilAlternativ) {
+	
+		if (TriggerAlternativ) {
+			return  NaAnteilAlternativ.get(1) * Kupon1 + NaAnteilAlternativ.get(2) * Kupon2 + NaAnteilAlternativ.get(3) * Kupon3 + NaAnteilAlternativ.get(4) * Kupon4 ; 
+		} else {
+			return  NaAnteilStandard.get(1) * Kupon1 + NaAnteilStandard.get(2) * Kupon2 + NaAnteilStandard.get(3) * Kupon3 + NaAnteilStandard.get(4) * Kupon4 ; 	
+		}
+	}
+	
+	
+	/**
+	 * OW_M.Bartnicki
+	 * OW_L.Schlenke
+	 * 
+	 * Funktionsname in Excel: OW_Zielbeteiligung_ZielPJ
+	 * Berechnet das Projektionsjahr bis zu dem die alternative Überschussbeteiligung gehalten werden soll
+	 *
+	 * @param szenario
+	 * @param scenarioID
+	 * @param scenarioID_vj
+	 * @param ZielPJ_vj
+	 * @param pfad
+	 * @param zeit
+	 * @param omega            
+	 * @param UEB_Trigger_Crisis_Property
+	 * @param UEB_Trigger_Crisis_Equity
+	 * @param UEB_Trigger_Crisis_Interest
+	 * @param UEB_Laufzeit_Crisis_Interest
+	 * @param UEB_Dauer_Crisis_Property
+	 * @param UEB_Dauer_Crisis_Equity
+	 * @param UEB_Dauer_Crisis_Interest
+	 * @param Crisis_Property_Stress_PJStart
+	 * @param Crisis_Equity_Stress_PJStart
+	 * @param Crisis_Interest_Stress_PJStart
+	 * @param Crisis_Spread_Stress_PJStart
+	 * @return
+	 */
+	public static int ow_Zielbeteiligung_ZielPJ(Szenario szenario, final int scenarioID, int scenarioID_vj, int ZielPJ_vj, final int pfad, 
+												final int zeit, final int omega, final double UEB_Trigger_Crisis_Property, 
+												final double UEB_Trigger_Crisis_Equity, final double UEB_Trigger_Crisis_Interest, final int UEB_Laufzeit_Crisis_Interest, 
+												final int UEB_Dauer_Crisis_Property, final int UEB_Dauer_Crisis_Equity, final int UEB_Dauer_Crisis_Interest, 
+												final boolean Crisis_Property_Stress_PJStart, final boolean Crisis_Equity_Stress_PJStart, 
+												final boolean Crisis_Interest_Stress_PJStart, final boolean Crisis_Spread_Stress_PJStart){	
+	
+		int ow_Zielbeteiligung_ZielPJ = 0;
+		
+		// Im Marktschock Szenario wird geprüft, ob die Trigger auch schon in den ersten Jahren greifen sollen
+	    // Greifen die Trigger in t=0 überschreibe ScenarioID_vj und ZielPJ_vj
+	    if((zeit == 1) && (scenarioID == 10 || scenarioID == 12 || scenarioID == 13 || scenarioID == 15 || (scenarioID >= 18 && scenarioID <= 23))) {
+	    	if(scenarioID == 10 && Crisis_Interest_Stress_PJStart) {
+	    		ZielPJ_vj = UEB_Dauer_Crisis_Interest - 1;
+	    		scenarioID_vj = 10;
+	    	}else if ((scenarioID == 12 || scenarioID == 13) && Crisis_Equity_Stress_PJStart){ 
+    			ZielPJ_vj = UEB_Dauer_Crisis_Equity - 1;
+                scenarioID_vj = 12;
+	    	}else if (scenarioID == 15 && Crisis_Property_Stress_PJStart) {
+                ZielPJ_vj = UEB_Dauer_Crisis_Property - 1;
+                scenarioID_vj = 15;
+	    	}else if (scenarioID >= 18 && scenarioID <= 23 && Crisis_Spread_Stress_PJStart) {
+	    		ZielPJ_vj = UEB_Dauer_Crisis_Interest - 1;
+	    		scenarioID_vj = 10;
+	    	}
+	    }
+	    
+        //Pruefe ob ein Marktschock eingetreten ist
+        if( zeit >= 1 ) { //t sollte immer groesser als 0 sein
+            if( szenario.getPfad(pfad).getPfadZeile(zeit).getSpotRlz(UEB_Laufzeit_Crisis_Interest) - szenario.getPfad(pfad).getPfadZeile(zeit - 1).getSpotRlz(UEB_Laufzeit_Crisis_Interest) <= UEB_Trigger_Crisis_Interest
+	            	&& zeit <= omega - UEB_Laufzeit_Crisis_Interest) {
+            	// Sobald ein Zinsschock eintritt, wird dieser eingeloggt
+            	ow_Zielbeteiligung_ZielPJ = Math.min(zeit + UEB_Dauer_Crisis_Interest, omega);
+            
+            }else if( szenario.getPfad(pfad).getPfadZeile(zeit).aktien / szenario.getPfad(pfad).getPfadZeile(zeit - 1).aktien - 1 <= UEB_Trigger_Crisis_Equity ) {
+            	// Ein Aktienschock wird nur eingeloggt, wenn nicht noch ein Zinsschock eingeloggt ist
+                if (!(scenarioID_vj == 10 && zeit <= ZielPJ_vj)) {
+                	ow_Zielbeteiligung_ZielPJ = Math.min(zeit + UEB_Dauer_Crisis_Equity, omega);
+                }else{
+                    ow_Zielbeteiligung_ZielPJ = ZielPJ_vj;
+                }
+                
+        	}else if( szenario.getPfad(pfad).getPfadZeile(zeit).immobilien / szenario.getPfad(pfad).getPfadZeile(zeit - 1).immobilien - 1 <= UEB_Trigger_Crisis_Property ) {
+        		// Ein Immobilienschock wird nur eingeloggt, wenn nicht noch ein Zinsschock oder ein Aktienschock eingeloggt ist
+                if (!((scenarioID_vj == 10 && zeit <= ZielPJ_vj) || (scenarioID_vj == 12 && zeit <= ZielPJ_vj))) {
+                	ow_Zielbeteiligung_ZielPJ = Math.min(zeit + UEB_Dauer_Crisis_Property, omega);
+                }else{
+                    ow_Zielbeteiligung_ZielPJ = ZielPJ_vj;
+                }
+                
+        	}else {
+        		// Falls kein Marktschock eingetreten ist, halte das Ziel Projektionsjahr bis es erreicht ist
+                if (zeit <= ZielPJ_vj){
+                    ow_Zielbeteiligung_ZielPJ = ZielPJ_vj;
+                }else{
+                    ow_Zielbeteiligung_ZielPJ = 0;
+                }
+        		
+			}
+        }
+	    
+	    return ow_Zielbeteiligung_ZielPJ;
+	}
+	
+	
+	/**
+	 * OW_M.Bartnicki
+	 * OW_L.Schlenke
+	 * 
+	 * Funktionsname in Excel: OW_Zielbeteiligung_Shock_SzenarioID
+	 * Berechnet die SzenarieID unter welcher der Überschusssatz gesucht werden soll
+	 * 
+	 * @param szenario
+	 * @param scenarioID
+	 * @param scenarioID_vj
+	 * @param ZielPJ
+	 * @param pfad
+	 * @param zeit
+	 * @param omega            
+	 * @param UEB_Trigger_Crisis_Property
+	 * @param UEB_Trigger_Crisis_Equity
+	 * @param UEB_Trigger_Crisis_Interest
+	 * @param UEB_Laufzeit_Crisis_Interest
+	 * @param UEB_Dauer_Crisis_Property
+	 * @param UEB_Dauer_Crisis_Equity
+	 * @param UEB_Dauer_Crisis_Interest
+	 * @param Crisis_Property_Stress_PJStart
+	 * @param Crisis_Equity_Stress_PJStart
+	 * @param Crisis_Interest_Stress_PJStart
+	 * @param Crisis_Spread_Stress_PJStart
+	 * @return
+	 */
+	public static int ow_Zielbeteiligung_Shock_SzenarioID(Szenario szenario, final int scenarioID, int scenarioID_vj, int ZielPJ_vj, final int pfad, 
+														final int zeit, final int omega, final double UEB_Trigger_Crisis_Property, 
+														final double UEB_Trigger_Crisis_Equity, final double UEB_Trigger_Crisis_Interest, final int UEB_Laufzeit_Crisis_Interest, 
+														final int UEB_Dauer_Crisis_Property, final int UEB_Dauer_Crisis_Equity, final int UEB_Dauer_Crisis_Interest,
+														final boolean Crisis_Property_Stress_PJStart, final boolean Crisis_Equity_Stress_PJStart, 
+														final boolean Crisis_Interest_Stress_PJStart, final boolean Crisis_Spread_Stress_PJStart){	
+		
+		int ow_Zielbeteiligung_Shock_SzenarioID = 0;
+		
+	    // Im Marktschock Szenario wird geprüft, ob die Trigger auch schon in den ersten Jahren greifen sollen
+	    // Greifen die Trigger in t=0 überschreibe ScenarioID_vj und ZielPJ_vj
+	    if((zeit ==1) && (scenarioID == 10 || scenarioID == 12 || scenarioID == 13 || scenarioID == 15 || (scenarioID >= 18 && scenarioID <= 23))) {
+	    	if(scenarioID == 10 && Crisis_Interest_Stress_PJStart) {
+	    		ZielPJ_vj = UEB_Dauer_Crisis_Interest - 1;
+	    		scenarioID_vj = 10;
+	    	}else if ((scenarioID == 12 || scenarioID == 13) && Crisis_Equity_Stress_PJStart){ 
+    			ZielPJ_vj = UEB_Dauer_Crisis_Equity - 1;
+                scenarioID_vj = 12;
+	    	}else if (scenarioID == 15 && Crisis_Property_Stress_PJStart) {
+                ZielPJ_vj = UEB_Dauer_Crisis_Property - 1;
+                scenarioID_vj = 15;
+	    	}else if (scenarioID >= 18 && scenarioID <= 23 && Crisis_Spread_Stress_PJStart) {
+	    		ZielPJ_vj = UEB_Dauer_Crisis_Interest - 1;
+	    		scenarioID_vj = 10;
+	    	}
+	    }
+	     
+        //Pruefe ob ein Marktschock eingetreten ist
+        if( zeit >= 1 ) { //t sollte immer groesser als 0 sein
+            if( szenario.getPfad(pfad).getPfadZeile(zeit).getSpotRlz(UEB_Laufzeit_Crisis_Interest) - szenario.getPfad(pfad).getPfadZeile(zeit - 1).getSpotRlz(UEB_Laufzeit_Crisis_Interest) <= UEB_Trigger_Crisis_Interest
+	            	&& zeit <= omega - UEB_Laufzeit_Crisis_Interest) {
+            	// Sobald ein Zinsschock eintritt, wird dieser eingeloggt
+            	ow_Zielbeteiligung_Shock_SzenarioID = 10;
+            
+            }else if( szenario.getPfad(pfad).getPfadZeile(zeit).aktien / szenario.getPfad(pfad).getPfadZeile(zeit - 1).aktien - 1 <= UEB_Trigger_Crisis_Equity ) {
+            	// Ein Aktienschock wird nur eingeloggt, wenn nicht noch ein Zinsschock eingeloggt ist
+                if (!(scenarioID_vj == 10 && zeit <= ZielPJ_vj)) {
+                	ow_Zielbeteiligung_Shock_SzenarioID = 12;
+                }else{
+                	ow_Zielbeteiligung_Shock_SzenarioID = scenarioID_vj;
+                }
+                
+        	}else if( szenario.getPfad(pfad).getPfadZeile(zeit).immobilien / szenario.getPfad(pfad).getPfadZeile(zeit - 1).immobilien - 1 <= UEB_Trigger_Crisis_Property ) {
+        		// Ein Immobilienschock wird nur eingeloggt, wenn nicht noch ein Zinsschock oder ein Aktienschock eingeloggt ist
+                if (!((scenarioID_vj == 10 && zeit <= ZielPJ_vj) || (scenarioID_vj == 12 && zeit <= ZielPJ_vj))) {
+                	ow_Zielbeteiligung_Shock_SzenarioID = 15;
+                }else{
+                	ow_Zielbeteiligung_Shock_SzenarioID = scenarioID_vj;
+                }
+                
+        	}else {
+        		// Falls kein Marktschock eingetreten ist, überprüfe ob das Zielprojektionsjahr noch nicht überschritten ist
+                if (zeit <= ZielPJ_vj){
+                	ow_Zielbeteiligung_Shock_SzenarioID = scenarioID_vj;
+                }else{
+                	ow_Zielbeteiligung_Shock_SzenarioID = 1;
+                }
+        		
+			}
+        }
+	    
+	    return ow_Zielbeteiligung_Shock_SzenarioID;
+	}
+	
+	
+	/**
+	 * OW_L.Schlenke
+	 * 
+	 * Funktionsname in Excel: OW_Zielbeteiligung_Shock_UEB
+	 * 
+	 * @param UEB_SzenarioID
+	 * @param UEB_BE
+	 * @param UEB_Property
+	 * @param UEB_Equity
+	 * @param UEB_Interest
+	 * @return
+	 */
+	public static double ow_zielbeteiligung_Shock_UEB(final int SzenarioID, final double UEB_BE, final double UEB_Property, final double UEB_Equity,final double UEB_Interest) {
+		
+		double ow_zielbeteiligung_Shock_UEB = 0;
+		
+		if (SzenarioID == 1) {
+			ow_zielbeteiligung_Shock_UEB = UEB_BE;
+		}else if (SzenarioID == 10) {
+			ow_zielbeteiligung_Shock_UEB = UEB_Interest;
+	    }else if (SzenarioID == 12 ||SzenarioID == 13) {
+	    	ow_zielbeteiligung_Shock_UEB = UEB_Equity;
+	    }else if (SzenarioID == 15) { 
+	    	ow_zielbeteiligung_Shock_UEB = UEB_Property;
+		}
+		
+		return ow_zielbeteiligung_Shock_UEB;
+		
 	}
 }

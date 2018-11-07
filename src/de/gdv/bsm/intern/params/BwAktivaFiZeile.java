@@ -25,8 +25,6 @@ import de.gdv.bsm.intern.csv.LineFormatException;
 public class BwAktivaFiZeile {
 	private final String risikoKategorie;
 	private final int zeit;
-	private final double cashflowFi;
-	private final double ertrag;
 	// MIL_W.Schalesi - Array
 	private double[] cashflowFi;
 	private double[] ertrag;
@@ -48,6 +46,8 @@ public class BwAktivaFiZeile {
 		// Lesen ab der zweiten Zeile
 		this.hrESznrRechnen = hrESznrRechnen;
 
+		risikoKategorie = zeile.getString(0);
+		zeit = zeile.getInt(1);
 
 		// MIL_W.Schalesi
 		cashflowFi = new double[anzahlSznr + 1];

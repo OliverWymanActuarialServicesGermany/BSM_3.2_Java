@@ -8,6 +8,7 @@ import java.util.List;
 import de.gdv.bsm.intern.csv.CsvReader;
 import de.gdv.bsm.intern.csv.CsvZeile;
 import de.gdv.bsm.intern.csv.LineFormatException;
+import de.gdv.bsm.vu.module.Functions;
 
 /**
  * Tabelle BW Aktiva FI. Abbild des Blattes <code>BW Aktiva FI</code>.
@@ -59,12 +60,8 @@ public class BwAktivaFi {
 			hrESznrRechnen = new boolean[anzahlSznr+1]; // Plus das Standardszenario "0"
 			String hrEString;
 			for (int i = 0; i < anzahlSznr; i++) {
-				hrEString = header.getString(i * 2 + startSpalte).toUpperCase();
-				if (hrEString.equals("WAHR")) {
-					hrERechnen = true;
-				} else {
-					hrERechnen = false;
-				}
+				hrEString = header.getString(i * 2 + startSpalte).toUpperCase();				
+				hrERechnen = Functions.booleanValueOfString(hrEString);
 				hrESznrRechnen[i+1] = hrERechnen; // Verschoben um das Standardszenario "0"
 			}
 			

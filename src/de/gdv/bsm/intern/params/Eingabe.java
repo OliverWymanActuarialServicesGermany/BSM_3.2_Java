@@ -7,6 +7,7 @@ import java.util.List;
 import de.gdv.bsm.intern.applic.Pair;
 import de.gdv.bsm.intern.csv.CsvReader;
 import de.gdv.bsm.intern.csv.LineFormatException;
+import de.gdv.bsm.vu.module.Functions;
 
 /**
  * Vorgabeparameter für die Berechnung aus Excel bzw. dem Dialog.
@@ -85,20 +86,12 @@ public class Eingabe {
 			pfadBis = csv.readLine().getInt(1);
 
 			final String flvString = csv.readLine().getString(1).toUpperCase();
-			if (flvString.trim().equals("WAHR") || flvString.trim().equals("TRUE")) {
-				flvRechnen = true;
-			} else {
-				flvRechnen = false;
-			}
+			flvRechnen = Functions.booleanValueOfString(flvString);
 
 			pfadSzenariensatz = csv.readLine().getString(1);
 
 			final String nagAusfallwk = csv.readLine().getString(1).toUpperCase();
-			if (nagAusfallwk.trim().equals("WAHR") || nagAusfallwk.trim().equals("TRUE")) {
-				negAusfallwk = true;
-			} else {
-				negAusfallwk = false;
-			}
+			negAusfallwk = Functions.booleanValueOfString(nagAusfallwk);
 
 			final String ausgabeString = csv.readLine().getString(1).toUpperCase();
 			if (ausgabeString.trim().equals("WAHR") || ausgabeString.trim().equals("TRUE")) {
@@ -112,23 +105,13 @@ public class Eingabe {
 			
 			// MIL_W.Schalesi - mit Milliman Anpassungen rechnen
 			final String millimanString = csv.readLine().getString(1).toUpperCase();
-			if (millimanString.equals("WAHR")) {
-				millimanRechnen = true;
-			} else {
-				millimanRechnen = false;
-			}
+			millimanRechnen = Functions.booleanValueOfString(millimanString);
+			
 			final String aggString = csv.readLine().getString(1).toUpperCase();
-			if (aggString.equals("WAHR")) {
-				aggSpeichern = true;
-			} else {
-				aggSpeichern = false;
-			}
+			aggSpeichern = Functions.booleanValueOfString(aggString);
+
 			final String rzgString = csv.readLine().getString(1).toUpperCase();
-			if (rzgString.equals("WAHR")) {
-				rzgSpeichern = true;
-			} else {
-				rzgSpeichern = false;
-			}
+			rzgSpeichern = Functions.booleanValueOfString(rzgString);
 
 		}
 
