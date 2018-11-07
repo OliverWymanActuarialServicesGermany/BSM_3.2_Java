@@ -629,13 +629,32 @@ public class RzgZeile {
 					vg.drLockInRzg, vg.sUeAfRzg, agg.vg.drLockInAggWennLoB, agg.vg.sueAf);
 			deklRzg = Deklaration.deklRzg(berechnung.getZeitunabhManReg().getDeklarationsMethode(), agg.vzGes, rmZTarif,
 					vg.drLockInRzg, zeit, uebNueb, agg.deklZins, deklRzgRest);
-			sueafZufFrfbUeberlauf = Deklaration.sueafZufFrfbUeberlauf(agg.dekl, deklRzg,
-					berechnung.getZeitabhManReg().get(zeit).getFrfbUeberlauf(), agg.fRfBUeberlauf, zeit, uebNueb);
-			sUeAfzuf = Deklaration.sUeAfzuf(deckungsStock,
-					berechnung.getZeitabhManReg().get(zeit).getZielBarauszahlungFlv(),
-					berechnung.getZeitabhManReg().get(zeit).getSueafZuf(),
-					berechnung.getZeitabhManReg().get(zeit).getSueafZufMin(), vg.drLockInRzg, deklRzg, zeit,
-					sueafZufFrfbUeberlauf, risikoErgebnis, uebrigesErgebnis, laengeProjektionDr);
+			
+			// MIL_W.Schalesi
+			if (berechnung.isMillimanRechnen() && agg.mmrJueTriggerBoolean) {		
+				sueafZufFrfbUeberlauf = Deklaration.sueafZufFrfbUeberlauf(agg.dekl, deklRzg,
+						berechnung.getZeitabhManReg().get(zeit).getFrfbUeberlaufAlternative(), agg.fRfBUeberlauf, zeit, uebNueb);
+			} else {
+				sueafZufFrfbUeberlauf = Deklaration.sueafZufFrfbUeberlauf(agg.dekl, deklRzg,
+						berechnung.getZeitabhManReg().get(zeit).getFrfbUeberlauf(), agg.fRfBUeberlauf, zeit, uebNueb);
+			}
+			
+			// MIL_W.Schalesi
+			if (berechnung.isMillimanRechnen() && agg.mmrJueTriggerBoolean) {
+				sUeAfzuf = Deklaration.sUeAfzuf(deckungsStock,
+						berechnung.getZeitabhManReg().get(zeit).getZielBarauszahlungFlv(),
+						berechnung.getZeitabhManReg().get(zeit).getSueafZufAlternative(),
+						berechnung.getZeitabhManReg().get(zeit).getSueafZufMin(), vg.drLockInRzg, deklRzg, zeit,
+						sueafZufFrfbUeberlauf, risikoErgebnis, uebrigesErgebnis, laengeProjektionDr);
+			} else {
+				sUeAfzuf = Deklaration.sUeAfzuf(deckungsStock,
+						berechnung.getZeitabhManReg().get(zeit).getZielBarauszahlungFlv(),
+						berechnung.getZeitabhManReg().get(zeit).getSueafZuf(),
+						berechnung.getZeitabhManReg().get(zeit).getSueafZufMin(), vg.drLockInRzg, deklRzg, zeit,
+						sueafZufFrfbUeberlauf, risikoErgebnis, uebrigesErgebnis, laengeProjektionDr);
+			}
+			
+			
 			bar = Deklaration.bar(deckungsStock,
 					berechnung.getZeitabhManReg().get(zeit).getZielBarauszahlungKlassisch(), praemien, deklRzg,
 					sUeAfzuf, sueafZufFrfbUeberlauf);

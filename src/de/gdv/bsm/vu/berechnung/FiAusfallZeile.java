@@ -99,9 +99,16 @@ public class FiAusfallZeile {
 		this.stressSzenarionId = berechnung.szenarioId;
 		this.kategorie = bwAktivaFiZeile.getRisikoKategorie();
 		this.zeit = zeit;
-		this.cashflowFi = bwAktivaFiZeile.getCashflowFi();
-		this.ertrag = bwAktivaFiZeile.getErtrag();
-
+		
+		// MIL_W.Schalesi
+		if (berechnung.isMillimanRechnen()) {
+			this.cashflowFi = bwAktivaFiZeile.getCashflowFi(stressSzenarionId);
+			this.ertrag = bwAktivaFiZeile.getErtrag(stressSzenarionId);
+		} else { // Standard BW Aktiva
+			this.cashflowFi = bwAktivaFiZeile.getCashflowFi(0);
+			this.ertrag = bwAktivaFiZeile.getErtrag(0);
+		}
+		
 		this.bwAktivaFiZeile = bwAktivaFiZeile;
 
 		if (zeit == 1) {
@@ -157,20 +164,20 @@ public class FiAusfallZeile {
 	}
 
 	/**
-	 * Cashflow FI. E, L 0.
+	 * Cashflow FI. E, L 0. MIL_W.Schalesi
 	 * 
 	 * @return die Zahl
 	 */
-	public double getCashflowFi() {
-		return bwAktivaFiZeile.getCashflowFi();
+	public double getCashflowFi(int stressSzenarioId) {
+		return bwAktivaFiZeile.getCashflowFi(stressSzenarioId);
 	}
 
 	/**
-	 * Handelsrechtlicher Ertrag. F, L 0.
+	 * Handelsrechtlicher Ertrag. F, L 0. MIL_W.Schalesi
 	 * 
 	 * @return die Zahl
 	 */
-	public double getErtrag() {
-		return bwAktivaFiZeile.getErtrag();
+	public double getErtrag(int stressSzenarioId) {
+		return bwAktivaFiZeile.getErtrag(stressSzenarioId);
 	}
 }

@@ -850,7 +850,7 @@ public class Rohueberschuss {
 	 *            Zuführung zur RfB der Jahre 0,1,2,3
 	 * @return
 	 */
-	private static double mittlRfbZuf10J(final int t, final VUHistorie vuHistorie, // final double[] RfB_Zuf_hist,
+	public static double mittlRfbZuf10J(final int t, final VUHistorie vuHistorie, // final double[] RfB_Zuf_hist,
 			final double[] rfbZufHistProj, final double[] rfb56bHistProj) {
 
 		double mittlRfbZuf10J = 0.0;
@@ -878,7 +878,7 @@ public class Rohueberschuss {
 	 *            Rohüberschuss der Jahre 0,1,2,3
 	 * @return
 	 */
-	private static double mittlRohueb10J(final int t, final VUHistorie vuHistorie, final double[] rohuebhistProj) {
+	public static double mittlRohueb10J(final int t, final VUHistorie vuHistorie, final double[] rohuebhistProj) {
 		double mittlRohueb10J = 0.0;
 		int zeit = t - 1;
 		for (int i = 0; i <= 9; ++i) {

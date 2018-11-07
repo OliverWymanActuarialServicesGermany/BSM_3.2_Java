@@ -35,6 +35,14 @@ public class Eingabe {
 	private String pfadSzenariensatz = "";
 	private boolean negAusfallwk = false;
 	private boolean ausgabe = false;
+	
+	private String pfadJava = "";
+	private String schaetzerFuerErwartungswerte = "";
+	
+	// MIL_W.Schalesi - mit Milliman Anpassungen rechnen
+	private boolean millimanRechnen = false;
+	private boolean aggSpeichern = false;
+	private boolean rzgSpeichern = false;
 
 	private final List<Pair<Integer, String>> szenarienList;
 
@@ -98,6 +106,30 @@ public class Eingabe {
 			} else {
 				ausgabe = false;
 			}
+
+			pfadJava = csv.readLine().getString(1);
+			schaetzerFuerErwartungswerte = csv.readLine().getString(1);
+			
+			// MIL_W.Schalesi - mit Milliman Anpassungen rechnen
+			final String millimanString = csv.readLine().getString(1).toUpperCase();
+			if (millimanString.equals("WAHR")) {
+				millimanRechnen = true;
+			} else {
+				millimanRechnen = false;
+			}
+			final String aggString = csv.readLine().getString(1).toUpperCase();
+			if (aggString.equals("WAHR")) {
+				aggSpeichern = true;
+			} else {
+				aggSpeichern = false;
+			}
+			final String rzgString = csv.readLine().getString(1).toUpperCase();
+			if (rzgString.equals("WAHR")) {
+				rzgSpeichern = true;
+			} else {
+				rzgSpeichern = false;
+			}
+
 		}
 
 	}
@@ -251,4 +283,43 @@ public class Eingabe {
 		return ausgabe;
 	}
 
+	// MIL_W.Schalesi - BEGIN
+	/**
+	 * Soll mit Milliman Anpassungen gerechnet werden?
+	 * 
+	 * @return ja oder nein
+	 */
+	public boolean isMillimanRechnen() {
+		return millimanRechnen;
+	}
+	
+	/**
+	 * Setze, ob mit Milliman Anpassungen gerechnet werden.
+	 * 
+	 * @param millimanrechnen
+	 * 		 ja oder nein
+	 */
+	public void setMillimanRechnen(boolean millimanRechnen) {
+		this.millimanRechnen = millimanRechnen;
+	}
+	
+	/**
+	 * Soll das agg-Blatt gespeichert werden?
+	 * 
+	 * @return ja oder nein
+	 */
+	public boolean IsaggSpeichern() {
+		return aggSpeichern;
+	}
+
+	/**
+	 * Soll das rzg-Blatt gespeichert werden?
+	 * 
+	 * @return ja oder nein
+	 */
+	public boolean IsrzgSpeichern() {
+		return rzgSpeichern;
+	}
+	// MIL_W.Schalesi - ENDE
+	
 }

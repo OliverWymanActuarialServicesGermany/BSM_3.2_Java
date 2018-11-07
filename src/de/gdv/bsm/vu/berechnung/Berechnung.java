@@ -17,6 +17,7 @@ import java.util.function.Function;
 import de.gdv.bsm.intern.applic.Pair;
 import de.gdv.bsm.intern.math.Newton;
 import de.gdv.bsm.intern.params.BwAktivaFi;
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.GenussNachrang;
 import de.gdv.bsm.intern.params.HgbBilanzdaten;
 import de.gdv.bsm.intern.params.LobMapping;
@@ -79,6 +80,10 @@ public class Berechnung {
 	private final ZeitunabhManReg zeitunabhManReg;
 	private final ZeitabhManReg zeitabhManReg;
 	final Szenario szenario;
+	
+	// MIL_W.Schalesi - Soll mit Milliman Anpassungen gerechnet werden?
+	public final boolean millimanRechnen;
+	private final DynManReg dynManReg;
 
 	/** Konstante UEB. */
 	public static final String LOB_MAP_UEB = "UEB";
@@ -207,7 +212,7 @@ public class Berechnung {
 	 *            die Daten des Zinsszenarios
 	 */
 	public Berechnung(final int szenarioId, final boolean flvRechnen, final boolean negAusfall, final boolean ausgabe,
-			final VuParameter vuParameter, final Szenario szenario) {
+			final VuParameter vuParameter, final Szenario szenario, final boolean millimanRechnen) {
 		this.szenarioId = szenarioId;
 		this.szenarioName = vuParameter.getSzenarioMapping().getSzenarionMapping(szenarioId).getName();
 		this.flvRechnen = flvRechnen;
@@ -224,6 +229,10 @@ public class Berechnung {
 		this.zeitunabhManReg = vuParameter.getZeitunabhManReg();
 		this.zeitabhManReg = vuParameter.getZeitabhManReg();
 		this.szenario = szenario;
+		
+		//MIL_W.Schalesi
+		this.millimanRechnen = millimanRechnen;
+		this.dynManReg = vuParameter.getDynManReg();
 
 		// Initialisierung diverser Werte:
 		eqReFi = hgbBilanzdaten.getEqReFiBuchwert();
@@ -950,6 +959,15 @@ public class Berechnung {
 	public ZeitabhManReg getZeitabhManReg() {
 		return zeitabhManReg;
 	}
+	
+	/**
+	 * MIL_W.Schalesi: Die Daten des Blattes der dynamischen Management-Regeln.
+	 * 
+	 * @return die Paramter
+	 */
+	public DynManReg getDynManReg() {
+		return dynManReg;
+	}
 
 	/**
 	 * ID des zu berechnenden Szenarios.
@@ -1050,5 +1068,14 @@ public class Berechnung {
 	 */
 	public double getDurationKaBestand() {
 		return durationKaBestand;
+	}
+
+	/**
+	 * MIL_W.Schalesi: Soll mit Milliman Anpassungen gerechnet werden?
+	 * 
+	 * @return der Wert
+	 */
+	public boolean isMillimanRechnen() {
+		return millimanRechnen;
 	}
 }

@@ -209,6 +209,10 @@ public class RechenThread implements Runnable {
 				final int threadCount = Math.max(1,
 						Math.min(Runtime.getRuntime().availableProcessors() - 1, pfade.size()));
 				for (int i = 0; i < threadCount; ++i) {
+					
+					final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
+							eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isMillimanRechnen());
+
 					if (szenarioId != sz.getZinskurve()) { 
 						szenario = new Szenario(new File(eingabe.getPfadSzenariensatz()), sz.getZinskurve(), pfadBis,
 								fortschritt);
@@ -221,9 +225,16 @@ public class RechenThread implements Runnable {
 									int rlzNeuanlage=vuParameter.getZeitabhManReg().getList().stream().mapToInt(e -> e.getRlzNeuAnl()).max().getAsInt();
 									int k = vuParameter.getBwAktivaFi().getList().size()-1;
 									for (k = vuParameter.getBwAktivaFi().getList().size()-1; k >= 0; k--) {
-									    if (vuParameter.getBwAktivaFi().getList().get(k).getCashflowFi() > 0) {
-									    	break;
-									    }
+										// MIL_W.Schalesi
+										if (berechnung.isMillimanRechnen()) {
+										    if (vuParameter.getBwAktivaFi().getList().get(k).getCashflowFi(szenarioId) > 0) {
+										    	break;
+										    } 
+										} else { // Standard BW Aktiva
+									    	if (vuParameter.getBwAktivaFi().getList().get(k).getCashflowFi(szenarioId) > 0) {
+										    	break;
+									    	}
+										}
 									}
 									int rlzAnfangsbestand = k;
 									//long rlzAnfangsbestand=vuParameter.getBwAktivaFi().getList().stream().count();
@@ -248,9 +259,6 @@ public class RechenThread implements Runnable {
 					// Ergänze die Zusatzinfo: Verwendung antithetischer Variablen in der ScenarioMappingZeile sz
 					sz.setAntitethischeVariablen(szenario.antitethischeVariablen);
 					
-					final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
-							eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario);
-
 					if (!ausgabeGeschrieben) {
 						ausgabe.println(
 								sz.getId() + ";" + sz.getName() + ";" + df.format(berechnung.getDurationKaBestand())

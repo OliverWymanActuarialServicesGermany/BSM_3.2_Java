@@ -34,6 +34,12 @@ public class BwAktivaFi {
 	private final int maxZeitCashflowFi;
 	private final List<BwAktivaFiZeile> zeilen = new ArrayList<>();
 
+	// MIL_W.Schalesi
+	private boolean[] hrESznrRechnen;
+	private boolean hrERechnen;
+	private final int anzahlSznr = 26; 	// plus das Standardszenario s.u.
+	private final int startSpalte = 8;	// Spalte fuer den Boolean wert des Szenario 1
+
 	/**
 	 * Erstelle die Daten aus einer csv-Datei.
 	 * 
@@ -47,13 +53,31 @@ public class BwAktivaFi {
 	public BwAktivaFi(final File dataFile) throws IOException, LineFormatException {
 		int maxZeitCashflowFi = 0;
 		try (final CsvReader csv = new CsvReader(dataFile, ';', '"')) {
-			csv.readLine();
+			// csv.readLine(); - MIL_W.Schalesi lesen vom header
+			CsvZeile header = csv.readLine();
+
+			hrESznrRechnen = new boolean[anzahlSznr+1]; // Plus das Standardszenario "0"
+			String hrEString;
+			for (int i = 0; i < anzahlSznr; i++) {
+				hrEString = header.getString(i * 2 + startSpalte).toUpperCase();
+				if (hrEString.equals("WAHR")) {
+					hrERechnen = true;
+				} else {
+					hrERechnen = false;
+				}
+				hrESznrRechnen[i+1] = hrERechnen; // Verschoben um das Standardszenario "0"
+			}
+			
+			//MIL_M.Bartnicki
+			hrESznrRechnen[0] = true;
+			
 			int count = 0;
 			CsvZeile line;
 			while ((line = csv.readLine()) != null) {
-				final BwAktivaFiZeile z = new BwAktivaFiZeile(line);
+				final BwAktivaFiZeile z = new BwAktivaFiZeile(line, hrESznrRechnen);
 				zeilen.add(z);
-				if (z.getCashflowFi() != 0.0 && maxZeitCashflowFi < z.getZeit()) {
+				// W.Schalesi: Check nur fuer standard cashflow
+				if (z.getCashflowFi(anzahlSznr + 1) != 0.0 && maxZeitCashflowFi < z.getZeit()) {
 					maxZeitCashflowFi = z.getZeit();
 				}
 				++count;

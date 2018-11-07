@@ -27,6 +27,12 @@ public class BwAktivaFiZeile {
 	private final int zeit;
 	private final double cashflowFi;
 	private final double ertrag;
+	// MIL_W.Schalesi - Array
+	private double[] cashflowFi;
+	private double[] ertrag;
+	private boolean[] hrESznrRechnen;
+	private final int anzahlSznr = 26;
+	private final int startSpalte = 5;
 
 	/**
 	 * Erstelle eine Datenzeile.
@@ -36,13 +42,25 @@ public class BwAktivaFiZeile {
 	 * @throws LineFormatException
 	 *             bei Formatfehlern in der Zeile
 	 */
-	public BwAktivaFiZeile(final CsvZeile zeile) throws LineFormatException {
-		risikoKategorie = zeile.getString(0);
-		zeit = zeile.getInt(1);
-		final double c = zeile.getDouble(2);
-		cashflowFi = Double.isNaN(c) ? 0.0 : c;
-		final double e = zeile.getDouble(3);
-		ertrag = Double.isNaN(e) ? 0.0 : e;
+	public BwAktivaFiZeile(final CsvZeile zeile, boolean[] hrESznrRechnen) throws LineFormatException {
+
+		// MIL_W.Schalesi
+		// Lesen ab der zweiten Zeile
+		this.hrESznrRechnen = hrESznrRechnen;
+
+
+		// MIL_W.Schalesi
+		cashflowFi = new double[anzahlSznr + 1];
+		ertrag = new double[anzahlSznr + 1];
+		double c, e;
+		for (int sznr = 0; sznr <= anzahlSznr; sznr++) {
+
+			c = zeile.getDouble(sznr * 2 + startSpalte);
+			cashflowFi[sznr] = Double.isNaN(c) ? 0.0 : c;
+
+			e = zeile.getDouble(sznr * 2 + startSpalte + 1);
+			ertrag[sznr] = Double.isNaN(e) ? 0.0 : e;
+		}
 	}
 
 	/**
@@ -64,21 +82,45 @@ public class BwAktivaFiZeile {
 	}
 
 	/**
-	 * Der Cashflow. Spalte C.
+	 * Der Cashflow. MIL_W.Schalesi
 	 * 
 	 * @return der Wert
 	 */
-	public double getCashflowFi() {
-		return cashflowFi;
+	public double getCashflowFi(int sznr) {
+		if (sznr <= 26) {
+			if (isHrERechnen(sznr))
+				return cashflowFi[sznr];
+			else// Sonst standard cashflow
+				return cashflowFi[0];
+		} else// Sonst standard cashflow
+			return cashflowFi[0];
 	}
 
 	/**
-	 * Der Ertrag. Spalte D.
+	 * Der Ertrag. MIL_W.Schalesi
 	 * 
 	 * @return der Wert
 	 */
-	public double getErtrag() {
-		return ertrag;
+	public double getErtrag(int sznr) {
+		if (sznr <= 26) {
+			if (isHrERechnen(sznr))
+				return ertrag[sznr];
+			else // Sonst standard cashflow
+				return ertrag[0];
+		} else// Sonst standard cashflow
+			return ertrag[0];
 	}
 
+	/**
+	 * W.Schalesi: Soll mit stressszenario abhaengigen BW Aktiva gerechnet
+	 * werden?
+	 * 
+	 * @return ja oder nein
+	 */
+	public boolean isHrERechnen(int sznr) {
+		if (hrESznrRechnen[sznr])
+			return true;
+		else
+			return false;
+	}
 }

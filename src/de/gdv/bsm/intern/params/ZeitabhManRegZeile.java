@@ -44,6 +44,13 @@ public class ZeitabhManRegZeile {
 	private final double detProjektionFlv;
 	private final int rlzNeuAnl;
 	private final int fiBwr;
+	
+	// MIL_W.Schalesi
+	private final double sueafZufAlternative;
+	private final double frfbUeberlaufAlternative;
+	private final double deltaNvz;
+	private final int verrechnungsZeitraumStandard;
+	private final int verrechnungsZeitraumAlternative;
 
 	/**
 	 * Erzeuge eine Zeile aus einer aufbereiteten Zeile der csv-Datei.
@@ -62,16 +69,27 @@ public class ZeitabhManRegZeile {
 		zielBarauszahlungFlv = zeile.getDouble(3);
 		sueafZufMin = zeile.getDouble(4);
 		sueafZuf = zeile.getDouble(5);
-		frfbUeberlauf = zeile.getDouble(6);
-		rfbEntnahme = zeile.getInt(7);
-		sueafEntnahme = zeile.getInt(8);
-		ekZiel = zeile.getDouble(9);
-		rEk = zeile.getDouble(10);
-		rohUeb = zeile.getDouble(11);
-		anteilUebrigenErgebnisseNeugeschaeft = zeile.getDouble(12);
-		detProjektionFlv = zeile.getDouble(13);
-		rlzNeuAnl = zeile.getInt(14);
-		fiBwr = zeile.getInt(15);
+		// MIL_W.Schalesi
+		sueafZufAlternative = zeile.getDouble(6);
+
+		frfbUeberlauf = zeile.getDouble(7);
+		// MIL_W.Schalesi
+		frfbUeberlaufAlternative = zeile.getDouble(8);
+		
+		rfbEntnahme = zeile.getInt(9);
+		sueafEntnahme = zeile.getInt(10);
+		ekZiel = zeile.getDouble(11);
+		rEk = zeile.getDouble(12);
+		rohUeb = zeile.getDouble(13);
+		anteilUebrigenErgebnisseNeugeschaeft = zeile.getDouble(14);
+		detProjektionFlv = zeile.getDouble(15);
+		rlzNeuAnl = zeile.getInt(16);
+		fiBwr = zeile.getInt(17);
+		// MIL_W.Schalesi
+		deltaNvz = zeile.getDouble(15);
+		verrechnungsZeitraumStandard = zeile.getInt(16);
+		verrechnungsZeitraumAlternative = zeile.getInt(17);
+
 	}
 
 	/**
@@ -84,10 +102,10 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * GrundÃ¼berschuss aus Risiko- und Ã¼brigen Ergebnissen, relevent fÃ¼r Bestimmung der restlichen Deklaration, in %
+	 * Grundüberschuss aus Risiko- und übrigen Ergebnissen, relevent für Bestimmung der restlichen Deklaration, in %
 	 * Spalte B
 	 * 
-	 * @return GrundÃ¼berschuss aus Risiko- und Ã¼brigen Ergebnissen
+	 * @return Grundüberschuss aus Risiko- und übrigen Ergebnissen
 	 */
 	public double getGrundUeberschuss() {
 		return grundUeberschuss;
@@ -112,7 +130,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Ziel-ZufÃ¼hrung zum SÃœAF bei der Deklaration p_SÃœAFzuf_min. Spalte E.
+	 * Ziel-Zuführung zum SÃœAF bei der Deklaration p_SÜFzuf_min. Spalte E.
 	 * 
 	 * @return der Wert
 	 */
@@ -121,7 +139,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Anteil der SÃœAF-ZufÃ¼hrung an der Deklaration gesamt p_SÃœAFZuf. Spalte F.
+	 * Anteil der SÜAF-Zuführung an der Deklaration gesamt p_SÜAFZuf. Spalte F.
 	 * 
 	 * @return der Wert
 	 */
@@ -130,7 +148,17 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Anteil des â€žRfB-Ãœberlaufs, der zu ErhÃ¶hung der Zieldeklaration verwendet wird p_fRfB_Ãœberlauf. Spalte G.
+	 * MIL_W.Schalesi: Anteil der alternativen SÜAF-Zuführung an der Deklaration gesamt p_SÜAFZuf. Spalte G.
+	 * 
+	 * @return der Wert
+	 */
+	public double getSueafZufAlternative() {
+		return sueafZufAlternative;
+	}
+	
+	/**
+	 * Anteil des p_RfB-Überlaufs, der zu Erhöhung der Zieldeklaration verwendet
+	 * wird p_fRfB_Überlauf. Spalte H.
 	 * 
 	 * @return der Wert
 	 */
@@ -139,7 +167,17 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Â§56b VAG fRfB- Entnahme (Ja =1, Nein =0). Spalte H.
+	 * MIL_W.Schalesi: Anteil der alternativen des p_RfB-Überlaufs, der zu Erhöhung der Zieldeklaration verwendet
+	 * wird p_fRfB_Überlauf. Spalte I.
+	 * 
+	 * @return der Wert
+	 */
+	public double getFrfbUeberlaufAlternative() {
+		return frfbUeberlaufAlternative;
+	}
+	
+	/**
+	 * Â§56b VAG fRfB- Entnahme (Ja =1, Nein =0). Spalte J.
 	 * 
 	 * @return der Wert
 	 */
@@ -148,7 +186,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Â§56b VAG SÃœAF- Entnahme (Ja =1, Nein =0). Spalte I.
+	 * Â§56b VAG SÜAF- Entnahme (Ja =1, Nein =0). Spalte K.
 	 * 
 	 * @return der Wert
 	 */
@@ -157,7 +195,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Zielanteil des Eigenkapitals an der DeckungsrÃ¼ckstellung EKZiel. Spalte J.
+	 * Zielanteil des Eigenkapitals an der Deckungsrückstellung EKZiel. Spalte L.
 	 * 
 	 * @return der Wert
 	 */
@@ -166,7 +204,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Verzinsungsanforderung des handelsrechtlichen Eigenkapital r_EK. Spalte K.
+	 * Verzinsungsanforderung des handelsrechtlichen Eigenkapital r_EK. Spalte M.
 	 * 
 	 * @return der Wert
 	 */
@@ -175,7 +213,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Zielbeteiligung am RohÃ¼berschuss in % vom RohÃ¼berschuss p_RohÃ¼b. Spalte L.
+	 * Zielbeteiligung am Rohüberschuss in % vom Rohüberschuss p_Rohüb. Spalte N.
 	 * 
 	 * @return der Wert
 	 */
@@ -184,7 +222,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Anteil des Ã¼brigen Ergebnisses fÃ¼r das NeugeschÃ¤ft. Spalte M.
+	 * Anteil des übrigen Ergebnisses für das Neugeschäft. Spalte O.
 	 * 
 	 * @return der Wert
 	 */
@@ -193,7 +231,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * deterministische Projektion FLV. Spalte N.
+	 * deterministische Projektion FLV. Spalte P.
 	 *
 	 * @return der Wert
 	 */
@@ -202,7 +240,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte O.
+	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte Q.
 	 * 
 	 * @return der Wert
 	 */
@@ -211,12 +249,40 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * Verrechnungszeitraum fÃ¼r FI-BWR Ï„_Verechn. Spalte P.
+	 * Verrechnungszeitraum fÃ¼r FI-BWR Ï„_Verechn. Spalte R.
 	 * 
 	 * @return der Wert
 	 */
 	public int getFiBwr() {
 		return fiBwr;
+	}
+
+	/**
+	 * MIL_W.Schalesi: Delta NVZ - BE Szenario, Pfad 0 und r_EK Spalte K. Spalte
+	 * S
+	 * 
+	 * @return der Wert
+	 */
+	public double getdeltaNvz() {
+		return deltaNvz;
+	}
+
+	/**
+	 * MIL_W.Schalesi: verrechnungsZeitraumStandard. Spalte T
+	 * 
+	 * @return der Wert
+	 */
+	public int getverrechnungsZeitraumStandard() {
+		return verrechnungsZeitraumStandard;
+	}
+
+	/**
+	 * MIL_W.Schalesi: verrechnungsZeitraumAlternative. Spalte U
+	 * 
+	 * @return der Wert
+	 */
+	public int getverrechnungsZeitraumAlternative() {
+		return verrechnungsZeitraumAlternative;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import de.gdv.bsm.intern.csv.CsvReader;
+import de.gdv.bsm.intern.csv.CsvZeile;
 import de.gdv.bsm.intern.csv.LineFormatException;
 
 /**
@@ -26,6 +27,9 @@ import de.gdv.bsm.intern.csv.LineFormatException;
  */
 public class ZeitunabhManReg {
 	// B2
+	//MIL_W.Schalesi
+	private final double couponTrigger;
+	
 	private final double monatZahlung;
 	private final double faelligkeitZinstitel;
 	private final double steuersatz;
@@ -42,8 +46,15 @@ public class ZeitunabhManReg {
 	private final double aFiZiel;
 	// B15
 	private final double aMinFi;
+	//MIL_W.Schalesi
+	private final double aFiZielAlternative;
+	private final double aMinFiAlternative;
+	
 	private final double zielMindestDaaFi;
 	private final double zielAnteilARe;
+	//MIL_W.Schalesi Zeile 17
+	private final double zielAnteilAReAlternative;
+	
 	private final double zielAnteilReDaa;
 	private final double daaFaktorRw;
 	// B20
@@ -52,12 +63,27 @@ public class ZeitunabhManReg {
 	private final double daaFaktorUntergrenzePassiveAktiveReserven;
 	private final double hFiZiel;
 	private final double hFiMax;
+	//MIL_W.Schalesi
+	private final double daaFaktorRwAlternative;
+	private final double daaFaktorFiBwrAlternative;
+	private final double daaFaktorRwVerlusteAlternative;
+	private final double daaFaktorUntergrenzePassiveAktiveReservenAlternative;
+	private final double hFiZielAlternative;
+	private final double hFiMaxAlternative;
+
 	// B25
 	private final double hReZiel;
 	private final double hReMax;
 	private final double aFiZielInitial;
 	private final double aFiMinInitial;
 	private final double aReZielInitial;
+	//MIL_W.Schalesi
+	private final double hReZielAlternative;
+	private final double hReMaxAlternative;
+	private final double aFiZielInitialAlternative;
+	private final double aFiMinInitialAlternative;
+	private final double aReZielInitialAlternative;
+	
 	// B30
 	private final double abschreibungsGrenzeEQ;
 	private final double abschreibungsGrenzeRE;
@@ -73,6 +99,10 @@ public class ZeitunabhManReg {
 	// B40
 	private final double pFrfbMin;
 	private final double pFrfbMax;
+	//MIL_W.Schalesi
+	private final double pFrfbMinAlternative;
+	private final double pFrfbMaxAlternative;
+	
 	private final int anzahlJahreDurchschnittlRfbZufuehrung;
 	private final int deklarationsMethode;
 	private final double zinsToleranz;
@@ -97,7 +127,11 @@ public class ZeitunabhManReg {
 			// skip header
 			csv.readLine();
 
-			monatZahlung = getDouble(csv); // B2
+			//MIL_W.Schalesi
+			CsvZeile zeileZwei = csv.readLine();
+			monatZahlung = zeileZwei.getDouble(1); // B2
+			couponTrigger =zeileZwei.getDouble(3); // D2
+			
 			faelligkeitZinstitel = getDouble(csv);
 			steuersatz = getDouble(csv);
 			// B5
@@ -112,26 +146,83 @@ public class ZeitunabhManReg {
 			bwrGrenzeRe = getDouble(csv);
 			anteilReY = getDouble(csv);
 			steuerungsMethodeAssetAllokation = getInt(csv);
-			aFiZiel = getDouble(csv);
-			// B15
-			aMinFi = getDouble(csv);
-			zielMindestDaaFi = getDouble(csv);
-			zielAnteilARe = getDouble(csv);
-			zielAnteilReDaa = getDouble(csv);
-			daaFaktorRw = getDouble(csv);
-			// B20
-			daaFaktorFiBwr = getDouble(csv);
-			daaFaktorRwVerluste = getDouble(csv);
-			daaFaktorUntergrenzePassiveAktiveReserven = getDouble(csv);
-			hFiZiel = getDouble(csv);
-			hFiMax = getDouble(csv);
 			
-			// B25
-			hReZiel = getDouble(csv);
-			hReMax = getDouble(csv);
-			aFiZielInitial = getDouble(csv);
-			aFiMinInitial = getDouble(csv);
-			aReZielInitial = getDouble(csv);
+			//MIL_W.Schalesi - Zeile 14
+			CsvZeile zeileVierzehn = csv.readLine();
+			aFiZiel = zeileVierzehn.getDouble(1); //B14
+			aFiZielAlternative = zeileVierzehn.getDouble(2); //C14
+			
+			//MIL_W.Schalesi - Zeile 15
+			CsvZeile zeileSechzehn = csv.readLine();
+			aMinFi = zeileSechzehn.getDouble(1); //B15
+			aMinFiAlternative = zeileSechzehn.getDouble(2); //C15
+		
+			zielMindestDaaFi = getDouble(csv);
+			
+			//MIL_W.Schalesi - Zeile 17
+			CsvZeile zeileSiebzehn = csv.readLine();
+			zielAnteilARe = zeileSiebzehn.getDouble(1); //B17
+			zielAnteilAReAlternative = zeileSiebzehn.getDouble(2); //C17
+			
+			zielAnteilReDaa = getDouble(csv);
+			
+			//MIL_W.Schalesi - Zeile 19
+			CsvZeile zeileNeunzehn = csv.readLine();
+			daaFaktorRw = zeileNeunzehn.getDouble(1); //B19
+			daaFaktorRwAlternative = zeileNeunzehn.getDouble(2); //B19
+			
+			// B20
+			//MIL_W.Schalesi - Zeile 20
+			CsvZeile zeileZwanzig = csv.readLine();
+			daaFaktorFiBwr = zeileZwanzig.getDouble(1); //B20
+			daaFaktorFiBwrAlternative = zeileZwanzig.getDouble(2); //C20
+			
+			//MIL_W.Schalesi - Zeile 21
+			CsvZeile zeileEinundZwanzig = csv.readLine();
+			daaFaktorRwVerluste = zeileEinundZwanzig.getDouble(1); //B21
+			daaFaktorRwVerlusteAlternative = zeileEinundZwanzig.getDouble(2); //C21
+			
+			//MIL_W.Schalesi - Zeile 22
+			CsvZeile zeileZweiundZwanzig = csv.readLine();
+			daaFaktorUntergrenzePassiveAktiveReserven = zeileZweiundZwanzig.getDouble(1); //B22
+			daaFaktorUntergrenzePassiveAktiveReservenAlternative = zeileZweiundZwanzig.getDouble(2); //B22
+
+			//MIL_W.Schalesi - Zeile 23
+			CsvZeile zeileDreiundZwanzig = csv.readLine();
+			hFiZiel = zeileDreiundZwanzig.getDouble(1); //B23
+			hFiZielAlternative = zeileDreiundZwanzig.getDouble(2); //B23
+			
+			//MIL_W.Schalesi - Zeile 24
+			CsvZeile zeileVierundZwanzig = csv.readLine();
+			hFiMax = zeileVierundZwanzig.getDouble(1); //B24
+			hFiMaxAlternative = zeileVierundZwanzig.getDouble(2); //B24
+
+			// B25			
+			//MIL_W.Schalesi - Zeile 25
+			CsvZeile zeileFünfundZwanzig = csv.readLine();
+			hReZiel = zeileFünfundZwanzig.getDouble(1); //B25
+			hReZielAlternative = zeileFünfundZwanzig.getDouble(2); //B25
+			
+			//MIL_W.Schalesi - Zeile 26
+			CsvZeile zeileSechsundZwanzig = csv.readLine();
+			hReMax = zeileSechsundZwanzig.getDouble(1); //B26
+			hReMaxAlternative = zeileSechsundZwanzig.getDouble(2); //B26
+			
+			//MIL_W.Schalesi - Zeile 27
+			CsvZeile zeileSiebenundZwanzig = csv.readLine();
+			aFiZielInitial = zeileSiebenundZwanzig.getDouble(1); //B27
+			aFiZielInitialAlternative = zeileSiebenundZwanzig.getDouble(2); //B27
+			
+			//MIL_W.Schalesi - Zeile 28
+			CsvZeile zeileAchtundZwanzig = csv.readLine();
+			aFiMinInitial = zeileAchtundZwanzig.getDouble(1); //B28
+			aFiMinInitialAlternative = zeileAchtundZwanzig.getDouble(2); //B28
+			
+			//MIL_W.Schalesi - Zeile 29
+			CsvZeile zeileNeunundZwanzig = csv.readLine();
+			aReZielInitial = zeileNeunundZwanzig.getDouble(1); //B29
+			aReZielInitialAlternative = zeileNeunundZwanzig.getDouble(2); //B29
+			
 			// B30
 			abschreibungsGrenzeEQ = getDouble(csv);
 			abschreibungsGrenzeRE = getDouble(csv);
@@ -145,8 +236,17 @@ public class ZeitunabhManReg {
 			parameter2M = getDouble(csv);
 			startRefZins = getDoubleOrNaN(csv);
 			// B40
-			pFrfbMin = getDouble(csv);
-			pFrfbMax = getDouble(csv);
+			
+			//MIL_W.Schalesi - Zeile 40
+			CsvZeile zeileVierzig = csv.readLine();
+			pFrfbMin = zeileVierzig.getDouble(1); //B40
+			pFrfbMinAlternative = zeileVierzig.getDouble(2); //C40
+			
+			//MIL_W.Schalesi - Zeile 41
+			CsvZeile zeileEinundVierzig = csv.readLine();
+			pFrfbMax = zeileEinundVierzig.getDouble(1); //B41
+			pFrfbMaxAlternative = zeileEinundVierzig.getDouble(2); //C41
+	
 			// wir akzeptieren auch double:
 			anzahlJahreDurchschnittlRfbZufuehrung = (int) getDouble(csv);
 			deklarationsMethode = getInt(csv);
@@ -606,5 +706,160 @@ public class ZeitunabhManReg {
 	public boolean getAbgrenzungImBsmRechnen() {
 		return abgrenzungImBsmRechnen;
 	}
+	
+	// MIL_W.Schalesi
+	
+	/**
+	 * Coupon-trigger. Feld D2.
+	 *
+	 * @return der Wert
+	 */
+	public double getCouponTrigger() {
+		return couponTrigger;
+	}
+	
+	/**
+	 * Alternative Zielanteil FI a_FI_Ziel. Feld C14.
+	 *
+	 * @return der Wert
+	 */
+	public double getaFiZielAlternative() {
+		return aFiZielAlternative;
+	}
 
+	/**
+	 * Alternative Mindestanteil FI a_min_FI. Feld C15.
+	 *
+	 * @return der Wert
+	 */
+	public double getaMinFiAlternative() {
+		return aMinFiAlternative;
+	}
+	
+	/**
+	 * Zielanteil RE a_RE_Ziel. Feld C17.
+	 *
+	 * @return der Wert
+	 */
+	public double getZielAnteilAReAlternative() {
+		return zielAnteilAReAlternative;
+	}
+	
+	/**
+	 * Alternative DAA-Faktor auf RW (DAA-Steuerung 1). Feld C19.
+	 *
+	 * @return der Wert
+	 */
+	public double getDaaFaktorRwAlternative() {
+		return daaFaktorRwAlternative;
+	}
+
+	/**
+	 * DAA-Faktor auf FI-BWR (DAA-Steuerung 1). Feld C20.
+	 *
+	 * @return der Wert
+	 */
+	public double getDaaFaktorFiBwrAlternative() {
+		return daaFaktorFiBwrAlternative;
+	}
+
+	/**
+	 * DAA-Faktor auf RW-Verluste (DAA-Steuerung 1). Feld C21.
+	 *
+	 * @return der Wert
+	 */
+	public double getDaaFaktorRwVerlusteAlternative() {
+		return daaFaktorRwVerlusteAlternative;
+	}
+
+	/**
+	 * DAA-Faktor: Untergrenze der passiven und aktiven Reserven (DAA-Steuerung 2). Feld C22.
+	 *
+	 * @return der Wert
+	 */
+	public double getDaaFaktorUntergrenzePassiveAktiveReservenAlternative() {
+		return daaFaktorUntergrenzePassiveAktiveReservenAlternative;
+	}
+	
+	/**
+	 * DAA-Umschichtung FI-Titel: Schrittweise, wenn DAA "gute wirschaftl. Situation" auslöst. Feld C23.
+	 *
+	 * @return der Wert
+	 */
+	public double gethFiZielAlternative() {
+		return hFiZielAlternative;
+	}
+	
+	/**
+	 * Schrittweite für FI-Titel in Richtung Maximalanteil für die DAA Feld C24.
+	 *
+	 * @return der Wert
+	 */
+	public double gethFiMaxAlternative() {
+		return hFiMaxAlternative;
+	}
+	
+	/**
+	 * Schrittweite für RE-Titel in Richtung Zielanteil für die DAA Feld C25.
+	 *
+	 * @return der Wert
+	 */
+	public double gethReZielAlternative() {
+		return hReZielAlternative;
+	}
+	
+	/**
+	 * Schrittweite für RE-Titel in Richtung Maximalanteil für die DAA Feld C26.
+	 *
+	 * @return der Wert
+	 */
+	public double gethReMaxAlternative() {
+		return hReMaxAlternative;
+	}
+	
+	/**
+	 * Initialwert für a_FI_Ziel ( = a_FI_Ziel(s, -1)). Feld C27.
+	 *
+	 * @return der Wert
+	 */
+	public double getaFiZielInitialAlternative() {
+		return aFiZielInitialAlternative;
+	}
+	
+	/**
+	 * Initialwert für a_FI_min ( = a_FI_min(s, -1)). Feld C28.
+	 *
+	 * @return der Wert
+	 */
+	public double getaFiMinInitialAlternative() {
+		return aFiMinInitialAlternative;
+	}
+	
+	/**
+	 * Initialwert für a_RE_Ziel ( = a_RE_Ziel(s, -1)). Feld C29.
+	 *
+	 * @return der Wert
+	 */
+	public double getaReZielInitialAlternative() {
+		return aReZielInitialAlternative;
+	}
+	
+	/**
+	 * Alternative Untergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_min. Feld C33.
+	 *
+	 * @return der Wert
+	 */
+	public double getpFrfbMinAlternative() {
+		return pFrfbMinAlternative;
+	}
+
+	/**
+	 * Alternative Obergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_max. Feld C34.
+	 *
+	 * @return der Wert
+	 */
+	public double getpFrfbMaxAlternative() {
+		return pFrfbMaxAlternative;
+	}
+	
 }
