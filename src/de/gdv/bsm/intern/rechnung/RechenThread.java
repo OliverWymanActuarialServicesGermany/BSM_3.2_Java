@@ -210,6 +210,7 @@ public class RechenThread implements Runnable {
 						Math.min(Runtime.getRuntime().availableProcessors() - 1, pfade.size()));
 				for (int i = 0; i < threadCount; ++i) {
 					
+					//MIL_W.Schalesi
 					final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
 							eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isMillimanRechnen());
 

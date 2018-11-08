@@ -185,43 +185,43 @@ public class ZeitunabhManReg {
 			//MIL_W.Schalesi - Zeile 22
 			CsvZeile zeileZweiundZwanzig = csv.readLine();
 			daaFaktorUntergrenzePassiveAktiveReserven = zeileZweiundZwanzig.getDouble(1); //B22
-			daaFaktorUntergrenzePassiveAktiveReservenAlternative = zeileZweiundZwanzig.getDouble(2); //B22
+			daaFaktorUntergrenzePassiveAktiveReservenAlternative = zeileZweiundZwanzig.getDouble(2); //C22
 
 			//MIL_W.Schalesi - Zeile 23
 			CsvZeile zeileDreiundZwanzig = csv.readLine();
 			hFiZiel = zeileDreiundZwanzig.getDouble(1); //B23
-			hFiZielAlternative = zeileDreiundZwanzig.getDouble(2); //B23
+			hFiZielAlternative = zeileDreiundZwanzig.getDouble(2); //C23
 			
 			//MIL_W.Schalesi - Zeile 24
 			CsvZeile zeileVierundZwanzig = csv.readLine();
 			hFiMax = zeileVierundZwanzig.getDouble(1); //B24
-			hFiMaxAlternative = zeileVierundZwanzig.getDouble(2); //B24
+			hFiMaxAlternative = zeileVierundZwanzig.getDouble(2); //C24
 
 			// B25			
 			//MIL_W.Schalesi - Zeile 25
 			CsvZeile zeileFünfundZwanzig = csv.readLine();
 			hReZiel = zeileFünfundZwanzig.getDouble(1); //B25
-			hReZielAlternative = zeileFünfundZwanzig.getDouble(2); //B25
+			hReZielAlternative = zeileFünfundZwanzig.getDouble(2); //C25
 			
 			//MIL_W.Schalesi - Zeile 26
 			CsvZeile zeileSechsundZwanzig = csv.readLine();
 			hReMax = zeileSechsundZwanzig.getDouble(1); //B26
-			hReMaxAlternative = zeileSechsundZwanzig.getDouble(2); //B26
+			hReMaxAlternative = zeileSechsundZwanzig.getDouble(2); //C26
 			
 			//MIL_W.Schalesi - Zeile 27
 			CsvZeile zeileSiebenundZwanzig = csv.readLine();
 			aFiZielInitial = zeileSiebenundZwanzig.getDouble(1); //B27
-			aFiZielInitialAlternative = zeileSiebenundZwanzig.getDouble(2); //B27
+			aFiZielInitialAlternative = zeileSiebenundZwanzig.getDouble(2); //C27
 			
 			//MIL_W.Schalesi - Zeile 28
 			CsvZeile zeileAchtundZwanzig = csv.readLine();
 			aFiMinInitial = zeileAchtundZwanzig.getDouble(1); //B28
-			aFiMinInitialAlternative = zeileAchtundZwanzig.getDouble(2); //B28
+			aFiMinInitialAlternative = zeileAchtundZwanzig.getDouble(2); //C28
 			
 			//MIL_W.Schalesi - Zeile 29
 			CsvZeile zeileNeunundZwanzig = csv.readLine();
 			aReZielInitial = zeileNeunundZwanzig.getDouble(1); //B29
-			aReZielInitialAlternative = zeileNeunundZwanzig.getDouble(2); //B29
+			aReZielInitialAlternative = zeileNeunundZwanzig.getDouble(2); //C29
 			
 			// B30
 			abschreibungsGrenzeEQ = getDouble(csv);
@@ -845,7 +845,7 @@ public class ZeitunabhManReg {
 	}
 	
 	/**
-	 * Alternative Untergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_min. Feld C33.
+	 * Alternative Untergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_min. Feld C40.
 	 *
 	 * @return der Wert
 	 */
@@ -854,7 +854,7 @@ public class ZeitunabhManReg {
 	}
 
 	/**
-	 * Alternative Obergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_max. Feld C34.
+	 * Alternative Obergrenze der freien RfB in Prozent der Deckungsrückstellung p_fRfB_max. Feld C41.
 	 *
 	 * @return der Wert
 	 */

@@ -923,58 +923,58 @@ public class AggZeile {
 	
 	//OW_D.Hohmann
     /** ZZR UEB, alt_sl. */
-	@TableField(testColumn = "IW", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "IX", testOption = TestOption.START, nachKomma = 0)
 	double zzrAlt_sl;
 	/** ZZR UEB, neu_sl. */
-	@TableField(testColumn = "IX", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "IY", testOption = TestOption.START, nachKomma = 0)
 	double zzrNeu_sl;
    /** delta-ZZR UEB, Altbestand_sl. */
-	@TableField(testColumn = "IY", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "IZ", testOption = TestOption.START, nachKomma = 0)
 	double deltaZzrUebAlt_sl = DOUBLE_INIT;
 	/** delta-ZZR UEB, Neubestand_sl. */
-	@TableField(testColumn = "IZ", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JA", testOption = TestOption.START, nachKomma = 0)
 	double deltaZzrUebNeu_sl = DOUBLE_INIT;
 	/** rmZ UEB Altbestand_sl. */
-	@TableField(testColumn = "JA", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JB", testOption = TestOption.START, nachKomma = 0)
 	double rmzUebAlt_sl = DOUBLE_INIT;
 	/** rmZ UEB Neubestand_sl. */
-	@TableField(testColumn = "JB", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JC", testOption = TestOption.START, nachKomma = 0)
 	double rmzUebNeu_sl = DOUBLE_INIT;
 	/** rmZ UEB Gesamt Altbestand_sl. */
-	@TableField(testColumn = "JC", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JD", testOption = TestOption.START, nachKomma = 0)
 	double rmzUebGesamtAlt_sl = DOUBLE_INIT;
 	/** rmZ UEB Gesamt Neubestand_sl. */
-	@TableField(testColumn = "JD", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JE", testOption = TestOption.START, nachKomma = 0)
 	double rmzUebGesamtNeu_sl = DOUBLE_INIT;
 	/** SÜAF, alt_sl. */
 	@TableField(testColumn = "JF", testOption = TestOption.START, nachKomma = 0)
 	double sueAfAlt_sl = DOUBLE_INIT;
 	/** SÜAF, neu_sl. */
-	@TableField(testColumn = "JE", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JG", testOption = TestOption.START, nachKomma = 0)
 	double sueAfNeu_sl = DOUBLE_INIT;
 	/** Übriges Ergebnis ÜB Altbestand_sl stochastisch. */
-	@TableField(testColumn = "JG", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JH", testOption = TestOption.START, nachKomma = 0)
 	double ueEalt_sl = DOUBLE_INIT;
 	/** Übriges Ergebnis ÜB Neubestand_sl stochastisch. */
-	@TableField(testColumn = "JH", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JI", testOption = TestOption.START, nachKomma = 0)
 	double ueEneu_sl = DOUBLE_INIT;
 	/** Übriges Ergebnis UEB, Bestand (ohne GCR) Altbestand_sl stochastisch. */
-	@TableField(testColumn = "JI", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JJ", testOption = TestOption.START, nachKomma = 0)
 	double ueEaltNoGcr_sl = DOUBLE_INIT;
 	/** Übriges Ergebnis UEB, Bestand (ohne GCR) Neubestand_sl stochastisch. */
-	@TableField(testColumn = "JJ", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JK", testOption = TestOption.START, nachKomma = 0)
 	double ueEneuNoGcr_sl = DOUBLE_INIT;
 	/** Risikoergebnis UEB, alt_sl, stochastisch. */
-	@TableField(testColumn = "JK", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JL", testOption = TestOption.START, nachKomma = 0)
 	double reAlt_sl = DOUBLE_INIT;
 	/** Risikoergebnis UEB, neu_sl, stochastisch. */
-	@TableField(testColumn = "JL", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JM", testOption = TestOption.START, nachKomma = 0)
 	double reNeu_sl = DOUBLE_INIT;
 	/** Deckungsrückstellung ÜB, Lockin, Altbestand_sl */
-	@TableField(testColumn = "JM", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JN", testOption = TestOption.START, nachKomma = 0)
 	double drLockInAlt_sl = DOUBLE_INIT;
 	/** Deckungsrückstellung ÜB, Lockin, Neubestand_sl */
-	@TableField(testColumn = "JN", testOption = TestOption.START, nachKomma = 0)
+	@TableField(testColumn = "JO", testOption = TestOption.START, nachKomma = 0)
 	double drLockInNeu_sl = DOUBLE_INIT;
 
 	
@@ -1530,7 +1530,7 @@ public class AggZeile {
 					berechnung.eqBuchwertKlassic, berechnung.reBuchwertKlassic, berechnung.getAggZeile(1).bwEq,
 					berechnung.getAggZeile(1).bwRe, berechnung.bwSaSp, vg.rapVT, (vg.vg == null ? 0.0 : vg.vg.rapVT));
 			kedVjVerrechnen = KaModellierung.kedVjVerrechnen(zeit, berechnung.getZeitabhManReg(), kedVerrechnungArr,
-					berechnung.laengeProjektionDr);
+					berechnung.laengeProjektionDr, berechnung.isMillimanRechnen(), berechnung.getDynManReg().isDynTauTriggerRechnen());
 			kedVjVerrechnenArr[zeit] = kedVjVerrechnen;
 			bwFiVerrechnung = KaModellierung.bwFiVerrechnung(zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr,
 					bwFiAkt, bwFiNeuAnArr, kedVerrechnungArr,
@@ -2114,9 +2114,6 @@ public class AggZeile {
 					berechnung.laengeProjektionDr);
 			fRfBVorEndzahlung = Deklaration.fRfBVorEndzahlung(vg.fRfBFrei, rfBZuf, nfRfB56b, fRfBMin, fRfBMax,
 					zielDeklaration, sUeAf56bEntnahme)+vg.uebertragFestgelegteInFreieRfBAgg;
-			dekl = Deklaration.dekl(vg.fRfBVorEndzahlung, fRfBVorEndzahlung, rfBZuf, nfRfB56b, sUeAf56bEntnahme,
-					fRfBMin, zielDeklaration, berechnung.getZeitabhManReg().get(zeit).getFrfbUeberlauf(), fRfBUeberlauf,
-					zeit, berechnung.laengeProjektionDr);
 			
 			//MIL_W.Schalesi
 			if (berechnung.isMillimanRechnen() && mmrJueTriggerBoolean){

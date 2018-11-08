@@ -49,8 +49,8 @@ public class ZeitabhManRegZeile {
 	private final double sueafZufAlternative;
 	private final double frfbUeberlaufAlternative;
 	private final double deltaNvz;
-	private final int verrechnungsZeitraumStandard;
-	private final int verrechnungsZeitraumAlternative;
+	private final int fiBwrStandard;
+	private final int fiBwrAlternative;
 
 	/**
 	 * Erzeuge eine Zeile aus einer aufbereiteten Zeile der csv-Datei.
@@ -86,9 +86,9 @@ public class ZeitabhManRegZeile {
 		rlzNeuAnl = zeile.getInt(16);
 		fiBwr = zeile.getInt(17);
 		// MIL_W.Schalesi
-		deltaNvz = zeile.getDouble(15);
-		verrechnungsZeitraumStandard = zeile.getInt(16);
-		verrechnungsZeitraumAlternative = zeile.getInt(17);
+		deltaNvz = zeile.getDouble(18);
+		fiBwrStandard = zeile.getInt(19);
+		fiBwrAlternative = zeile.getInt(20);
 
 	}
 
@@ -258,7 +258,7 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * MIL_W.Schalesi: Delta NVZ - BE Szenario, Pfad 0 und r_EK Spalte K. Spalte
+	 * MIL_W.Schalesi: Delta NVZ - BE Szenario, Pfad 0 und r_EK Spalte S. Spalte
 	 * S
 	 * 
 	 * @return der Wert
@@ -268,21 +268,21 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * MIL_W.Schalesi: verrechnungsZeitraumStandard. Spalte T
+	 * MIL_W.Schalesi: fiBwrStandard. Spalte T
 	 * 
 	 * @return der Wert
 	 */
-	public int getverrechnungsZeitraumStandard() {
-		return verrechnungsZeitraumStandard;
+	public int getFiBwrStandard() {
+		return fiBwrStandard;
 	}
 
 	/**
-	 * MIL_W.Schalesi: verrechnungsZeitraumAlternative. Spalte U
+	 * MIL_W.Schalesi: fiBwrAlternative. Spalte U
 	 * 
 	 * @return der Wert
 	 */
-	public int getverrechnungsZeitraumAlternative() {
-		return verrechnungsZeitraumAlternative;
+	public int getFiBwrAlternative() {
+		return fiBwrAlternative;
 	}
 
 }
