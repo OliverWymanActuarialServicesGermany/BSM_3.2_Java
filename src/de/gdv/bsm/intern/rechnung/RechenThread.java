@@ -209,10 +209,6 @@ public class RechenThread implements Runnable {
 				final int threadCount = Math.max(1,
 						Math.min(Runtime.getRuntime().availableProcessors() - 1, pfade.size()));
 				for (int i = 0; i < threadCount; ++i) {
-					
-					//MIL_W.Schalesi
-					final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
-							eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isMillimanRechnen());
 
 					if (szenarioId != sz.getZinskurve()) { 
 						szenario = new Szenario(new File(eingabe.getPfadSzenariensatz()), sz.getZinskurve(), pfadBis,
@@ -227,6 +223,8 @@ public class RechenThread implements Runnable {
 									int k = vuParameter.getBwAktivaFi().getList().size()-1;
 									for (k = vuParameter.getBwAktivaFi().getList().size()-1; k >= 0; k--) {
 										// MIL_W.Schalesi
+										final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
+												eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isMillimanRechnen());
 										if (berechnung.isMillimanRechnen()) {
 										    if (vuParameter.getBwAktivaFi().getList().get(k).getCashflowFi(szenarioId) > 0) {
 										    	break;
@@ -260,6 +258,8 @@ public class RechenThread implements Runnable {
 					// Ergänze die Zusatzinfo: Verwendung antithetischer Variablen in der ScenarioMappingZeile sz
 					sz.setAntitethischeVariablen(szenario.antitethischeVariablen);
 					
+					final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
+							eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isMillimanRechnen());
 					if (!ausgabeGeschrieben) {
 						ausgabe.println(
 								sz.getId() + ";" + sz.getName() + ";" + df.format(berechnung.getDurationKaBestand())
