@@ -823,11 +823,13 @@ public class Rohueberschuss {
 		}
 		if (refZins <= refzinsVergleich) {
 			refZins2m = Math.max(
-					refzinsVergleich - anwendungsDifferenzAnteilig * Math.max(refzinsVergleich - basisZins, 0.0),
+					//OW_F.Wellens: Die Rundung bei der Ermittlung von "refzins_vergleich - basisZins" des Referenzzinssatzes 2M muss angepasst werden.
+					//Betragsmäßig muss immer aufgerundet werden auf die zweite Nachkommastelle.
+					refzinsVergleich - anwendungsDifferenzAnteilig * Math.max(Math.round((refzinsVergleich - basisZins+0.005)*100)/100.0, 0.0),
 					refZins);
 		} else {
 			refZins2m = Math.min(
-					refzinsVergleich + anwendungsDifferenzAnteilig * Math.max(basisZins - refzinsVergleich, 0),
+					refzinsVergleich + anwendungsDifferenzAnteilig * Math.max(Math.round((basisZins - refzinsVergleich+0.005)*100)/100.0, 0),
 					refZins);
 			if (refZins2m < refzinsVergleich && basisZins > refzinsVergleich) {
 				refZins2m = refzinsVergleich;
