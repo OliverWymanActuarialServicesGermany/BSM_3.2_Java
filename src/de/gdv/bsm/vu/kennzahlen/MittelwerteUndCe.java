@@ -44,6 +44,8 @@ public class MittelwerteUndCe {
 	private final int szenarioId;
 	private final String lob;
 	private final int zeit;
+	@TableField(columnName="Kosten")	
+	private final double l; //Kosten
 	@TableField(columnName="Leistungen beim Tod")	
 	private final double n; //Leistungen beim Tod
 	@TableField(columnName="Kapitalabfindungen, nur Rentenversicherung")	
@@ -97,6 +99,7 @@ public class MittelwerteUndCe {
 		this.lob = lob;
 		this.zeit = zeit;
 
+		this.l = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getKosten(), aggZeile, monat)).sum();
 		this.n = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlTod(), aggZeile, monat)).sum();
 		this.o = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlKa(), aggZeile, monat)).sum();		
 		this.p = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getsonstigeErlebensfallLeistungen(), aggZeile, monat)).sum();		
@@ -146,6 +149,13 @@ public class MittelwerteUndCe {
 		return zeit;
 	}
 
+	/**
+	 * @return the l
+	 */
+	public double getL() {
+		return l;
+	}
+	
 	/**
 	 * @return the n
 	 */
