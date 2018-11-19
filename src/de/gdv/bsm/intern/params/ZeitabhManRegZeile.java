@@ -83,16 +83,16 @@ public class ZeitabhManRegZeile {
 		rEk = zeile.getDouble(12);
 		rohUeb = zeile.getDouble(13);
 		// OW_F.Wellens
-		for (int i = 0; i < 38; ++i) {
+		for (int i = 0; i < 39; ++i) {
 			anteilUebrigenErgebnisseNeugeschaeft[i] = zeile.getDouble(14+i);
 		}
-		detProjektionFlv = zeile.getDouble(54);
-		rlzNeuAnl = zeile.getInt(55);
-		fiBwr = zeile.getInt(56);
+		detProjektionFlv = zeile.getDouble(53);
+		rlzNeuAnl = zeile.getInt(54);
+		fiBwr = zeile.getInt(55);
 		// MIL_W.Schalesi
-		deltaNvz = zeile.getDouble(57);
-		fiBwrStandard = zeile.getInt(58);
-		fiBwrAlternative = zeile.getInt(59);
+		deltaNvz = zeile.getDouble(56);
+		fiBwrStandard = zeile.getInt(57);
+		fiBwrAlternative = zeile.getInt(58);
 
 	}
 
