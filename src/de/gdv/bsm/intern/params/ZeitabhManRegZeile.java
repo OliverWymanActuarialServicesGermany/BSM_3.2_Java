@@ -39,7 +39,8 @@ public class ZeitabhManRegZeile {
 	private final double rEk;
 
 	private final double rohUeb;
-	private final double anteilUebrigenErgebnisseNeugeschaeft;
+	// OW_F.Wellens
+	private final double[] anteilUebrigenErgebnisseNeugeschaeft = new double[39];
 
 	private final double detProjektionFlv;
 	private final int rlzNeuAnl;
@@ -81,14 +82,17 @@ public class ZeitabhManRegZeile {
 		ekZiel = zeile.getDouble(11);
 		rEk = zeile.getDouble(12);
 		rohUeb = zeile.getDouble(13);
-		anteilUebrigenErgebnisseNeugeschaeft = zeile.getDouble(14);
-		detProjektionFlv = zeile.getDouble(15);
-		rlzNeuAnl = zeile.getInt(16);
-		fiBwr = zeile.getInt(17);
+		// OW_F.Wellens
+		for (int i = 0; i < 38; ++i) {
+			anteilUebrigenErgebnisseNeugeschaeft[i] = zeile.getDouble(14+i);
+		}
+		detProjektionFlv = zeile.getDouble(54);
+		rlzNeuAnl = zeile.getInt(55);
+		fiBwr = zeile.getInt(56);
 		// MIL_W.Schalesi
-		deltaNvz = zeile.getDouble(18);
-		fiBwrStandard = zeile.getInt(19);
-		fiBwrAlternative = zeile.getInt(20);
+		deltaNvz = zeile.getDouble(57);
+		fiBwrStandard = zeile.getInt(58);
+		fiBwrAlternative = zeile.getInt(59);
 
 	}
 
@@ -226,7 +230,8 @@ public class ZeitabhManRegZeile {
 	 * 
 	 * @return der Wert
 	 */
-	public double getAnteilUebrigenErgebnisseNeugeschaeft() {
+	// OW_F.Wellens
+	public double[] getAnteilUebrigenErgebnisseNeugeschaeft() {
 		return anteilUebrigenErgebnisseNeugeschaeft;
 	}
 

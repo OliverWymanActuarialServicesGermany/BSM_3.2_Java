@@ -45,6 +45,7 @@ public class DynManReg {
 	private Boolean Crisis_Equity_Stress_PJStart;
 	private Boolean Crisis_Interest_Stress_PJStart;
 	private Boolean Crisis_Spread_Stress_PJStart;
+	private Boolean Anteil_NG_am_uebrigen_Ergebnis;
 
 	public DynManReg(final File dataFile) throws IOException, LineFormatException {
 		try (final CsvReader csv = new CsvReader(dataFile, ';', '"')) {
@@ -194,9 +195,19 @@ public class DynManReg {
 			final String Crisis_Spread_Stress_PJStartString = sechsunddreissig.getString(1).toUpperCase();
 			Crisis_Spread_Stress_PJStart = Functions.booleanValueOfString(Crisis_Spread_Stress_PJStartString);
 			p_RohUebWerte.put(sechsunddreissig.getInt(3), sechsunddreissig.getDouble(5));
+			
+			// Zeile 37
+			CsvZeile siebenunddreissig = csv.readLine();
+			final String Anteil_NG_am_uebrigen_ErgebnisString = siebenunddreissig.getString(1).toUpperCase();
+			if (Anteil_NG_am_uebrigen_ErgebnisString.equals("WAHR")) {
+				Anteil_NG_am_uebrigen_Ergebnis = true;
+			} else {
+				Anteil_NG_am_uebrigen_Ergebnis = false;
+			}
+			p_RohUebWerte.put(siebenunddreissig.getInt(3), siebenunddreissig.getDouble(5));
 
-			// Zeile 37 - Zeile 40
-			for (int i = 36; i <= 39; i++) {
+			// Zeile 38 - Zeile 40
+			for (int i = 37; i <= 39; i++) {
 				CsvZeile zeile = csv.readLine();
 				p_RohUebWerte.put(zeile.getInt(3), zeile.getDouble(5));
 			}
@@ -481,5 +492,13 @@ public class DynManReg {
 	public Boolean getCrisis_Spread_Stress_PJStart() {
 		return Crisis_Spread_Stress_PJStart;
 	}
-
+	
+	/**
+	 * Soll der Trigger in den ersten Jahren im Spreadszenario ziehen?
+	 * 
+	 * @return der Wert
+	 */
+	public Boolean getAnteil_NG_am_uebrigen_Ergebnis() {
+		return Anteil_NG_am_uebrigen_Ergebnis;
+	}
 }

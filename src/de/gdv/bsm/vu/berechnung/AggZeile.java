@@ -1770,15 +1770,26 @@ public class AggZeile {
 		
 
 		if (zeit > 0) {
-			ueEaltNoGcr = Rohueberschuss.kostenueberschussBestand(ueEalt,
-					berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
-			ueEneuNoGcr = Rohueberschuss.kostenueberschussBestand(ueEneu,
-					berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
+			// OW_F.Wellens
+			if(berechnung.isMillimanRechnen() && berechnung.getDynManReg().getAnteil_NG_am_uebrigen_Ergebnis()){
+				ueEaltNoGcr = Rohueberschuss.kostenueberschussBestand(ueEalt, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[szenarioId-1]);
+				ueEneuNoGcr = Rohueberschuss.kostenueberschussBestand(ueEneu, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[szenarioId-1]);
+			} else {
+				ueEaltNoGcr = Rohueberschuss.kostenueberschussBestand(ueEalt, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
+				ueEneuNoGcr = Rohueberschuss.kostenueberschussBestand(ueEneu, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
+			
+			}
 
 			//OW_D.Hohmann
-			ueEaltNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEalt_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
-			ueEneuNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEneu_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());			
-			
+			// OW_F.Wellens
+			if(berechnung.isMillimanRechnen() && berechnung.getDynManReg().getAnteil_NG_am_uebrigen_Ergebnis()){
+				ueEaltNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEalt_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[szenarioId-1]);
+				ueEneuNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEneu_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[szenarioId-1]);			
+			} else {
+				ueEaltNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEalt_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
+				ueEneuNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEneu_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
+			}
+				
 			deltaZzrUebAlt = Rohueberschuss.deltaZzr(zzrAlt, vg.zzrAlt);
 			deltaZzrUebNeu = Rohueberschuss.deltaZzr(zzrNeu, vg.zzrNeu);
 
