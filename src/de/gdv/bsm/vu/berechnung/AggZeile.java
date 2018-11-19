@@ -2467,7 +2467,7 @@ public class AggZeile {
 	// Get-Funktionen der agg-Spalten BA bis BZ.
 	
 	/**
-	 * FI_MW. BR.
+	 * FI_MW. BS.
 	 * 
 	 * @return der Wert
 	 */

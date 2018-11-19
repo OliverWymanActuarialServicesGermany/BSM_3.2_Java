@@ -57,19 +57,19 @@ public class MittelwerteUndCe {
 	@TableField(columnName="HGB DRst inkl. Ansammlungsguthaben ohne ZZR")	
 	private final double w;//HGB DRst inkl. Ansammlungsguthaben ohne ZZR
 	@TableField(columnName="Aufwendungen für KA, anteilsmäßig")
-	private final double bv; // Aufwendungen für KA, anteilsmäßig, neu BW
+	private final double bw; // Aufwendungen für KA, anteilsmäßig, neu BW
 	@TableField(columnName="Leistungen Gesamt")
-	private final double bj; // Leistungen Gesamt, neu BK
+	private final double bk; // Leistungen Gesamt, neu BK
 	@TableField(columnName="Leistungen durch Endzahlung")
-	private final double bk; // Leistungen durch Endzahlung, neu BL
+	private final double bl; // Leistungen durch Endzahlung, neu BL
 	@TableField(columnName="Beiträge stochastisch")
-	private final double af; // Beiträge stochastisch, neu AG
+	private final double ag; // Beiträge stochastisch, neu AG
 	@TableField(columnName="Kosten stochastisch")
-	private final double ag; // Kosten stochastisch, neu AH
+	private final double ah; // Kosten stochastisch, neu AH
 	@TableField(columnName="CF EVU -> RVU (nicht LE-abhängig), stochastisch, diskontiert")
-	private final double ak; // CE EVU -> RVU (nicht LE-abhängig), stochastisch; diskontiert, neu AL
-	@TableField(columnName="Gesamt Storno")	
-	private final double br;//Gesamt Storno
+	private final double al; // CE EVU -> RVU (nicht LE-abhängig), stochastisch; diskontiert, neu AL
+	@TableField(columnName="FI Marktwert gesamt")	
+	private final double bs;//FI Marktwert gesamt
 
 	/**
 	 * Erstelle die Kennzahlen zu einem Pfad anhand der Agg-Zeilen.
@@ -105,13 +105,13 @@ public class MittelwerteUndCe {
 		this.p = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getsonstigeErlebensfallLeistungen(), aggZeile, monat)).sum();		
 		this.q = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getlRkw(), aggZeile, monat)).sum();	
 		this.w = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getDrDet(), aggZeile, monat)).sum();	
-		this.bv = rzgZeilen.stream().mapToDouble(z -> df(z.getKostenKaRzg(), aggZeile)).sum();
-		this.bj = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getLGesamt(), aggZeile, monat)).sum();
-		this.bk = rzgZeilen.stream().mapToDouble(z -> df(z.getEndZahlung(), aggZeile)).sum();
-		this.af = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getBeitraegeStoch(), aggZeile, monat)).sum();
-		this.ag = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getKostenStoch(), aggZeile, monat)).sum();
-		this.ak = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getCfRvStoch(), aggZeile, monat)).sum();
-		this.br = aggZeile.getfiMw();
+		this.bw = rzgZeilen.stream().mapToDouble(z -> df(z.getKostenKaRzg(), aggZeile)).sum();
+		this.bk = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getLGesamt(), aggZeile, monat)).sum();
+		this.bl = rzgZeilen.stream().mapToDouble(z -> df(z.getEndZahlung(), aggZeile)).sum();
+		this.ag = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getBeitraegeStoch(), aggZeile, monat)).sum();
+		this.ah = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getKostenStoch(), aggZeile, monat)).sum();
+		this.al = rzgZeilen.stream().mapToDouble(z -> dfVu(z.getCfRvStoch(), aggZeile, monat)).sum();
+		this.bs = aggZeile.getfiMw();
 	}
 
 	/**
@@ -192,17 +192,10 @@ public class MittelwerteUndCe {
 	}
 	
 	/**
-	 * @return the bv
+	 * @return the bw
 	 */
-	public double getBv() {
-		return bv;
-	}
-
-	/**
-	 * @return the bj
-	 */
-	public double getBj() {
-		return bj;
+	public double getBw() {
+		return bw;
 	}
 
 	/**
@@ -213,10 +206,10 @@ public class MittelwerteUndCe {
 	}
 
 	/**
-	 * @return the af
+	 * @return the bl
 	 */
-	public double getAf() {
-		return af;
+	public double getBl() {
+		return bl;
 	}
 
 	/**
@@ -227,16 +220,23 @@ public class MittelwerteUndCe {
 	}
 
 	/**
-	 * @return the ak
+	 * @return the ah
 	 */
-	public double getAk() {
-		return ak;
+	public double getAh() {
+		return ah;
 	}
 
 	/**
-	 * @return the br
+	 * @return the al
 	 */
-	public double getBr() {
-		return br;
+	public double getAl() {
+		return al;
+	}
+
+	/**
+	 * @return the bs
+	 */
+	public double getBs() {
+		return bs;
 	}
 }
