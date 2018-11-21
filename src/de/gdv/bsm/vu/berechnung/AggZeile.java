@@ -1789,7 +1789,7 @@ public class AggZeile {
 				ueEaltNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEalt_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
 				ueEneuNoGcr_sl = Rohueberschuss.kostenueberschussBestand(ueEneu_sl, berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
 			}
-				
+							
 			deltaZzrUebAlt = Rohueberschuss.deltaZzr(zzrAlt, vg.zzrAlt);
 			deltaZzrUebNeu = Rohueberschuss.deltaZzr(zzrNeu, vg.zzrNeu);
 
@@ -2473,18 +2473,18 @@ public class AggZeile {
 	public double getRueckZahlung() {
 		return rueckZahlung;
 	}
-
-	// ========================================================================
-	// Get-Funktionen der agg-Spalten BA bis BZ.
 	
-	/**
-	 * FI_MW. BS.
-	 * 
-	 * @return der Wert
-	 */
-	public double getfiMw() {
-		return fiMw;
-	}
+	// ========================================================================
+		// Get-Funktionen der agg-Spalten BA bis BZ.
+		
+		/**
+		 * FI_MW. BR.
+		 * 
+		 * @return der Wert
+		 */
+		public double getfiMw() {
+			return fiMw;
+		}
 
 	// ========================================================================
 	// Get-Funktionen der agg-Spalten CA bis CZ.
@@ -2635,7 +2635,7 @@ public class AggZeile {
 	public double getEndZahlungAgg() {
 		return endZahlungAgg;
 	}
-
+	
 	/**
 	 * Passive Reserve. GX.
 	 * 
