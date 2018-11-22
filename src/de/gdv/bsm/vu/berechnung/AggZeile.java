@@ -1146,8 +1146,13 @@ public class AggZeile {
 		if (zeit != 0) {
 			cfFiAkt = berechnung.getFiAusfall(zeit).cfFimitAusfallJahresende;
 			keFiAkt = berechnung.getFiAusfall(zeit).keaktBestandJeR;
-			rlz = KaModellierung.rlz(berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl(),
-					berechnung.laengeProjektionDr, zeit);
+			if (berechnung.isMillimanRechnen() && mmrCouponTriggerBoolean){
+				rlz = KaModellierung.rlz(berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnlAlternative(),
+						berechnung.laengeProjektionDr, zeit);
+			}else {
+				rlz = KaModellierung.rlz(berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl(),
+						berechnung.laengeProjektionDr, zeit);
+			}
 			zpFaelligkeit = KaModellierung.zpFaelligkeit(zeit, rlz);
 			
 			//*** OW_LS Beginn Flexible FI Neuanlage***
@@ -1465,9 +1470,16 @@ public class AggZeile {
 
 			final PfadZeile pfadZeile = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit);
 
-			mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
+			if (berechnung.isMillimanRechnen() && mmrCouponTriggerBoolean){
+				mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
+						berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
+						berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnlAlternative());
+			}else {
+				mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
 					berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
 					berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl());
+			}
+			
 
 			fiMw = mwFiJahresende;
 

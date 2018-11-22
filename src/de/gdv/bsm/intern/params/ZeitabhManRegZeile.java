@@ -44,6 +44,7 @@ public class ZeitabhManRegZeile {
 
 	private final double detProjektionFlv;
 	private final int rlzNeuAnl;
+	private final int rlzNeuAnlAlternative;
 	private final int fiBwr;
 	
 	// MIL_W.Schalesi
@@ -88,11 +89,12 @@ public class ZeitabhManRegZeile {
 		}
 		detProjektionFlv = zeile.getDouble(53);
 		rlzNeuAnl = zeile.getInt(54);
-		fiBwr = zeile.getInt(55);
+		rlzNeuAnlAlternative = zeile.getInt(55);
+		fiBwr = zeile.getInt(56);
 		// MIL_W.Schalesi
-		deltaNvz = zeile.getDouble(56);
-		fiBwrStandard = zeile.getInt(57);
-		fiBwrAlternative = zeile.getInt(58);
+		deltaNvz = zeile.getDouble(57);
+		fiBwrStandard = zeile.getInt(58);
+		fiBwrAlternative = zeile.getInt(59);
 
 	}
 
@@ -251,6 +253,15 @@ public class ZeitabhManRegZeile {
 	 */
 	public int getRlzNeuAnl() {
 		return rlzNeuAnl;
+	}
+		
+	/**
+	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte Q.
+	 * 
+	 * @return der Wert
+	 */
+	public int getRlzNeuAnlAlternative() {
+		return rlzNeuAnlAlternative;
 	}
 
 	/**
