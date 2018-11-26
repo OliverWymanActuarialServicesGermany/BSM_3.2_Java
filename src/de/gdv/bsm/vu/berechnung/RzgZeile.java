@@ -871,7 +871,7 @@ public class RzgZeile {
 	public double getPraemien() {
 		return praemien;
 	}
-
+	
 	/**
 	 * Leistungen beim Tod. N.
 	 * 

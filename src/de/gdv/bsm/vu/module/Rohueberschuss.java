@@ -824,7 +824,7 @@ public class Rohueberschuss {
 		if (refZins <= refzinsVergleich) {
 			refZins2m = Math.max(
 					//OW_F.Wellens: Die Rundung bei der Ermittlung von "refzins_vergleich - basisZins" des Referenzzinssatzes 2M muss angepasst werden.
-					//Betragsmäßig muss immer aufgerundet werden auf die zweite Nachkommastelle.
+					//Betragsmaessig muss immer aufgerundet werden auf die zweite Nachkommastelle.
 					refzinsVergleich - anwendungsDifferenzAnteilig * Math.max(Math.round((refzinsVergleich - basisZins+0.005)*100)/100.0, 0.0),
 					refZins);
 		} else {

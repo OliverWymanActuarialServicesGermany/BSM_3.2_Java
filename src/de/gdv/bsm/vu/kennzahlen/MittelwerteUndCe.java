@@ -68,8 +68,8 @@ public class MittelwerteUndCe {
 	private final double ag; // Kosten stochastisch, neu AH
 	@TableField(columnName="CF EVU -> RVU (nicht LE-abhängig), stochastisch, diskontiert")
 	private final double ak; // CE EVU -> RVU (nicht LE-abhängig), stochastisch; diskontiert, neu AL
-	@TableField(columnName="Gesamt Storno")	
-	private final double br;//Gesamt Storno
+	@TableField(columnName="FI Buchwert gesamt")	
+	private final double br;//FI Buchwert gesamt
 	/**
 	 * Erstelle die Kennzahlen zu einem Pfad anhand der Agg-Zeilen.
 	 * 

@@ -195,7 +195,7 @@ public class DynManReg {
 			final String Crisis_Spread_Stress_PJStartString = sechsunddreissig.getString(1).toUpperCase();
 			Crisis_Spread_Stress_PJStart = Functions.booleanValueOfString(Crisis_Spread_Stress_PJStartString);
 			p_RohUebWerte.put(sechsunddreissig.getInt(3), sechsunddreissig.getDouble(5));
-			
+
 			// Zeile 37
 			CsvZeile siebenunddreissig = csv.readLine();
 			final String Anteil_NG_am_uebrigen_ErgebnisString = siebenunddreissig.getString(1).toUpperCase();
@@ -204,8 +204,8 @@ public class DynManReg {
 			} else {
 				Anteil_NG_am_uebrigen_Ergebnis = false;
 			}
+			
 			p_RohUebWerte.put(siebenunddreissig.getInt(3), siebenunddreissig.getDouble(5));
-
 			// Zeile 38 - Zeile 40
 			for (int i = 37; i <= 39; i++) {
 				CsvZeile zeile = csv.readLine();
@@ -492,7 +492,7 @@ public class DynManReg {
 	public Boolean getCrisis_Spread_Stress_PJStart() {
 		return Crisis_Spread_Stress_PJStart;
 	}
-	
+
 	/**
 	 * Soll der Trigger in den ersten Jahren im Spreadszenario ziehen?
 	 * 
