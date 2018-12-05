@@ -1298,8 +1298,11 @@ public class AggZeile {
 			jaehrlZinsEsg = EsgFormeln.jaehrlZinsEsg(vg.diskontEsg, diskontEsg);
 		}
 
-		zzrSpotEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR;
-
+		// zzrSpotEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR;
+		zzrSpotEsg = Math.signum(berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR) *
+				Math.ceil(10000.0 * Math.abs(berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR)) / 10000.0;
+		
+		
 		{
 			final ReferenzZinssatz rz = berechnung.referenzZinssatz;
 			AggZeile az = this;
