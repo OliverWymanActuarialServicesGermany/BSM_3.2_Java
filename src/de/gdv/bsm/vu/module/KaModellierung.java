@@ -2076,7 +2076,12 @@ public class KaModellierung {
 					if (i + vzr >= t) {
 						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
 					}
-				} else {
+				}else if(isMillimanRechnen) {
+					int vzr = manRec.get(i).getFiBwrStandard();
+					if (i + vzr >= t) {
+						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
+					}
+				}else {
 					int vzr = manRec.get(i).getFiBwr();
 					if (i + vzr >= t) {
 						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
