@@ -812,6 +812,8 @@ public class Rohueberschuss {
 			final double basisZins, final int t, double anwendungsDifferenzAnteilig, double startRefZins) {
 		final double refzinsVergleich;
 		double refZins2m = 0.0;
+		double differenz1 = 0.0;
+		double differenz2 = 0.0;
 		if (t == 1) {
 			if (Double.isNaN(startRefZins)) {
 				refzinsVergleich = refZinsV;
@@ -821,17 +823,12 @@ public class Rohueberschuss {
 		} else {
 			refzinsVergleich = nanZero(refZins2Mv);
 		}
-		if (refZins <= refzinsVergleich) {
-			refZins2m = Math.max(
-					refzinsVergleich - anwendungsDifferenzAnteilig * Math.max(refzinsVergleich - basisZins, 0.0),
-					refZins);
+		differenz1 = Math.signum(refZins - refzinsVergleich) * Math.round(10000.0 * (Math.abs(refZins - refzinsVergleich) + 0.0000499999999)) / 10000.0;
+		differenz2 = Math.signum(basisZins - refzinsVergleich) * Math.round(10000.0 *(anwendungsDifferenzAnteilig * Math.abs(basisZins - refzinsVergleich) + 0.0000499999999 )) / 10000.0;
+		if (Math.signum(differenz1) == Math.signum(differenz2)) {
+			refZins2m = refzinsVergleich + Math.signum(differenz1) * Math.min(Math.abs(differenz1), Math.abs(differenz2));
 		} else {
-			refZins2m = Math.min(
-					refzinsVergleich + anwendungsDifferenzAnteilig * Math.max(basisZins - refzinsVergleich, 0),
-					refZins);
-			if (refZins2m < refzinsVergleich && basisZins > refzinsVergleich) {
-				refZins2m = refzinsVergleich;
-			}
+			refZins2m = refzinsVergleich;
 		}
 		return refZins2m;
 	}
