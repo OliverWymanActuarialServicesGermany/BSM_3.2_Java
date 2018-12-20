@@ -1545,7 +1545,7 @@ public class AggZeile {
 					berechnung.eqBuchwertKlassic, berechnung.reBuchwertKlassic, berechnung.getAggZeile(1).bwEq,
 					berechnung.getAggZeile(1).bwRe, berechnung.bwSaSp, vg.rapVT, (vg.vg == null ? 0.0 : vg.vg.rapVT));
 			kedVjVerrechnen = KaModellierung.kedVjVerrechnen(zeit, berechnung.getZeitabhManReg(), kedVerrechnungArr,
-					berechnung.laengeProjektionDr, berechnung.isMillimanRechnen(), berechnung.getDynManReg().isDynTauTriggerRechnen());
+					berechnung.laengeProjektionDr, berechnung.isMillimanRechnen(), berechnung.getDynManReg().isDynTauTriggerRechnen(), mmrCouponTriggerBoolean);
 			kedVjVerrechnenArr[zeit] = kedVjVerrechnen;
 			bwFiVerrechnung = KaModellierung.bwFiVerrechnung(zeit, berechnung.laengeProjektionDr, zpFaelligkeitArr,
 					bwFiAkt, bwFiNeuAnArr, kedVerrechnungArr,

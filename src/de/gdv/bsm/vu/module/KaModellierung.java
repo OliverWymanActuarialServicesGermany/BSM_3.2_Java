@@ -2064,24 +2064,33 @@ public class KaModellierung {
 	
 	//OW_F.Wellens
 	public static double kedVjVerrechnen(final int t, final ZeitabhManReg manRec, final double[] kedVerrechnung,
-			final int omega, final boolean isMillimanRechnen,  final boolean isDynTauTriggerRechnen) {
+			final int omega, final boolean isMillimanRechnen,  final boolean isDynTauTriggerRechnen, final boolean mmrCouponTriggerBoolean) {
 		double kedVjVerrechnen = 0.0;
 		if (t < 2) {
 			return kedVjVerrechnen;
 		}
 		if (t < omega) {
 			for (int i = 1; i < t; i++) {
-				if (isMillimanRechnen && isDynTauTriggerRechnen) {
-					int vzr = manRec.get(i).getFiBwrAlternative();
-					if (i + vzr >= t) {
-						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
+				if (isMillimanRechnen) { 
+					if (isDynTauTriggerRechnen) {
+						if (mmrCouponTriggerBoolean) {
+							int vzr = manRec.get(i).getFiBwrAlternative();
+							if (i + vzr >= t) {
+								kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
+							}
+						} else {
+							int vzr = manRec.get(i).getFiBwrStandard();
+							if (i + vzr >= t) {
+								kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
+							}
+						}
+					} else {
+						int vzr = manRec.get(i).getFiBwr();
+						if (i + vzr >= t) {
+							kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
+						}
 					}
-				}else if(isMillimanRechnen) {
-					int vzr = manRec.get(i).getFiBwrStandard();
-					if (i + vzr >= t) {
-						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
-					}
-				}else {
+				} else {
 					int vzr = manRec.get(i).getFiBwr();
 					if (i + vzr >= t) {
 						kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
@@ -2090,10 +2099,24 @@ public class KaModellierung {
 			}
 		} else {
 			for (int i = 1; i <= omega - 1; i++) {
-				if (isMillimanRechnen && isDynTauTriggerRechnen) {
-					int vzr = manRec.get(i).getFiBwrAlternative();
-					if (i + vzr >= omega) {
-						kedVjVerrechnen = kedVjVerrechnen + ((vzr - omega + i + 1) * nanZero(kedVerrechnung[i] / vzr));
+				if (isMillimanRechnen) { 
+					if (isDynTauTriggerRechnen) {
+						if (mmrCouponTriggerBoolean) {
+							int vzr = manRec.get(i).getFiBwrAlternative();
+							if (i + vzr >= omega) {
+								kedVjVerrechnen = kedVjVerrechnen + ((vzr - omega + i + 1) * nanZero(kedVerrechnung[i] / vzr));
+							}
+						} else {
+							int vzr = manRec.get(i).getFiBwrStandard();
+							if (i + vzr >= omega) {
+								kedVjVerrechnen = kedVjVerrechnen + ((vzr - omega + i + 1) * nanZero(kedVerrechnung[i] / vzr));
+							}
+						}
+					} else {
+						int vzr = manRec.get(i).getFiBwr();
+						if (i + vzr >= omega) {
+							kedVjVerrechnen = kedVjVerrechnen + ((vzr - omega + i + 1) * nanZero(kedVerrechnung[i] / vzr));
+						}
 					}
 				} else {
 					int vzr = manRec.get(i).getFiBwr();
