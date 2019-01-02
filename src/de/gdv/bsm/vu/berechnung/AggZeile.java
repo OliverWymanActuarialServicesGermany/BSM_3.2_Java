@@ -1473,15 +1473,9 @@ public class AggZeile {
 
 			final PfadZeile pfadZeile = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit);
 
-			if (berechnung.isMillimanRechnen() && mmrCouponTriggerBoolean){
-				mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
-						berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
-						berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnlAlternative());
-			}else {
-				mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
-					berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
-					berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl());
-			}
+			mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
+				berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
+				berechnung.getZeitabhManReg().get(zeit).getRlzNeuAnl());
 			
 
 			fiMw = mwFiJahresende;
