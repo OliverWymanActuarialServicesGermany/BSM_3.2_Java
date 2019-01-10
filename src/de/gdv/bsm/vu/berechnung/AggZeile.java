@@ -1300,7 +1300,7 @@ public class AggZeile {
 
 		// zzrSpotEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR;
 		zzrSpotEsg = Math.signum(berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR) *
-				Math.ceil(10000.0 * Math.abs(berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR)) / 10000.0;
+				Math.round(10000.0 * (Math.abs(berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).spotrate10jZZR)+0.0000499999999)) / 10000.0;
 		
 		
 		{
