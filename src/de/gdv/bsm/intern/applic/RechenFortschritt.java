@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -14,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
-
+import com.munichre.bsmrv.MrVuParameter;
 import de.gdv.bsm.intern.csv.LineFormatException;
 import de.gdv.bsm.intern.params.Eingabe;
 import de.gdv.bsm.intern.params.SzenarioMapping;
@@ -51,210 +50,215 @@ import de.gdv.bsm.vu.kennzahlen.KennzahlenPfadweiseLoB;
  */
 @SuppressWarnings("serial")
 public class RechenFortschritt extends JDialog implements RechenFortschrittInterface {
-	/**
-	 * Art der Beendigung einer Berechnung.
-	 */
-	public enum ExitCode {
-		/** Die Berechnung wurde ordnungsgemäß beendet. */
-		OK,
 
-		/** Die Berechnung wurde durch den Benutzer abgebrochen. */
-		ABBRUCH,
+    /**
+     * Art der Beendigung einer Berechnung.
+     */
+    public enum ExitCode {
+    /** Die Berechnung wurde ordnungsgemäß beendet. */
+    OK,
 
-		/**
-		 * Die Berechnung wurde mit Fehler abgebrochen. Die Fehlerursache findet sich mit
-		 * {@link RechenFortschritt#getCrashReason()}.
-		 */
-		FEHLER
-	}
+    /** Die Berechnung wurde durch den Benutzer abgebrochen. */
+    ABBRUCH,
 
-	private final Map<Integer, JProgressBar> sznrProgress = new HashMap<>();
-	private final Map<Integer, JProgressBar> berechnungProgress = new HashMap<>();
-	private final Map<Class<?>, JProgressBar> ausgabeProgress = new HashMap<>();
-	private BerechnungResultat berechnungResultat = null;
-	private ExitCode exitCode = ExitCode.OK;
-	private Throwable crashReason = null;
+    /**
+     * Die Berechnung wurde mit Fehler abgebrochen. Die Fehlerursache findet sich mit
+     * {@link RechenFortschritt#getCrashReason()}.
+     */
+    FEHLER
+    }
 
-	/**
-	 * Erstelle das Fenster.
-	 * 
-	 * @param vuParameterParam
-	 * 
-	 * @param eingabe
-	 *            Vorgaben
-	 * @param basisPfad
-	 *            Grundverzeichnis
-	 * @throws IOException
-	 *             bei IO-Fehlern
-	 * @throws LineFormatException
-	 *             bei csv Lesefehlern
-	 */
-	public RechenFortschritt(final VuParameter vuParameterParam, final Eingabe eingabe)
-			throws IOException, LineFormatException {
-		setModal(true);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+    private final Map<Integer, JProgressBar> sznrProgress = new HashMap<>();
+    private final Map<Integer, JProgressBar> berechnungProgress = new HashMap<>();
+    private final Map<Class<?>, JProgressBar> ausgabeProgress = new HashMap<>();
+    private BerechnungResultat berechnungResultat = null;
+    private ExitCode exitCode = ExitCode.OK;
+    private Throwable crashReason = null;
 
-		// bei jedem Rechnen laden wir die VU-Parameter im Dialog neu,
-		// da der Benutzer dann diverse Excel-Reports machen kann
-		final VuParameter vuParameter = new VuParameter(vuParameterParam.getTransferDir());
-		final Set<Integer> szenarienSatzIds = new TreeSet<>();
+    /**
+     * Erstelle das Fenster.
+     * 
+     * @param vuParameterParam
+     * 
+     * @param eingabe
+     *            Vorgaben
+     * @param basisPfad
+     *            Grundverzeichnis
+     * @throws IOException
+     *             bei IO-Fehlern
+     * @throws LineFormatException
+     *             bei csv Lesefehlern
+     */
+    public RechenFortschritt(final VuParameter vuParameterParam, final Eingabe eingabe)
+            throws IOException, LineFormatException {
+        setModal(true);
+        setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-		final JComponent center = new LabelPanel() {
-			{
-				int row = 0;
+        // bei jedem Rechnen laden wir die VU-Parameter im Dialog neu,
+        // da der Benutzer dann diverse Excel-Reports machen kann
+        // BSM MR IN <
+        final MrVuParameter vuParameter = new MrVuParameter(vuParameterParam.getTransferDir());
+        // BSM MR IN >
+        final Set<Integer> szenarienSatzIds = new TreeSet<>();
 
-				final SzenarioMapping szenarioMapping = vuParameter.getSzenarioMapping();
-				if (eingabe.isAlleSzenarien()) {
-					for (SzenarioMappingZeile zeile : szenarioMapping.getAktiveSzenarien()) {
-						szenarienSatzIds.add(zeile.getZinskurve());
-					}
-				} else {
-					SzenarioMappingZeile zeile = szenarioMapping.getSzenarionMapping(eingabe.getSzenario());
-					szenarienSatzIds.add(zeile.getZinskurve());
-				}
+        final JComponent center = new LabelPanel() {
 
-				addLine(row++, "Eingaben", new JSeparator());
+            {
+                int row = 0;
 
-				for (int id : szenarienSatzIds) {
-					final JProgressBar pb = new JProgressBar();
-					sznrProgress.put(id, pb);
-					addLine(row++, Szenario.getName(id), pb);
-				}
+                final SzenarioMapping szenarioMapping = vuParameter.getSzenarioMapping();
+                if (eingabe.isAlleSzenarien()) {
+                    for (SzenarioMappingZeile zeile : szenarioMapping.getAktiveSzenarien()) {
+                        szenarienSatzIds.add(zeile.getZinskurve());
+                    }
+                } else {
+                    SzenarioMappingZeile zeile = szenarioMapping.getSzenarionMapping(eingabe.getSzenario());
+                    szenarienSatzIds.add(zeile.getZinskurve());
+                }
 
-				addLine(row++, "Berechnungen", new JSeparator());
+                addLine(row++, "Eingaben", new JSeparator());
 
-				if (eingabe.isAlleSzenarien()) {
-					for (SzenarioMappingZeile zeile : szenarioMapping.getAktiveSzenarien()) {
-						final JProgressBar p = new JProgressBar();
-						berechnungProgress.put(zeile.getId(), p);
-						addLine(row++, zeile.getName() + " (" + zeile.getId() + ")", p);
-					}
-				} else {
-					SzenarioMappingZeile zeile = szenarioMapping.getSzenarionMapping(eingabe.getSzenario());
-					final JProgressBar p = new JProgressBar();
-					berechnungProgress.put(zeile.getId(), p);
-					addLine(row++, zeile.getName() + " (" + zeile.getId() + ")", p);
-				}
+                for (int id : szenarienSatzIds) {
+                    final JProgressBar pb = new JProgressBar();
+                    sznrProgress.put(id, pb);
+                    addLine(row++, Szenario.getName(id), pb);
+                }
 
-				addLine(row++, "Ausgaben", new JSeparator());
+                addLine(row++, "Berechnungen", new JSeparator());
 
-				final JProgressBar rzg = new JProgressBar();
-				ausgabeProgress.put(RzgZeile.class, rzg);
-				addLine(row++, "rzg", rzg);
+                if (eingabe.isAlleSzenarien()) {
+                    for (SzenarioMappingZeile zeile : szenarioMapping.getAktiveSzenarien()) {
+                        final JProgressBar p = new JProgressBar();
+                        berechnungProgress.put(zeile.getId(), p);
+                        addLine(row++, zeile.getName() + " (" + zeile.getId() + ")", p);
+                    }
+                } else {
+                    SzenarioMappingZeile zeile = szenarioMapping.getSzenarionMapping(eingabe.getSzenario());
+                    final JProgressBar p = new JProgressBar();
+                    berechnungProgress.put(zeile.getId(), p);
+                    addLine(row++, zeile.getName() + " (" + zeile.getId() + ")", p);
+                }
 
-				final JProgressBar agg = new JProgressBar();
-				ausgabeProgress.put(AggZeile.class, agg);
-				addLine(row++, "agg", agg);
-				
-				final JProgressBar fiAusfJPrg = new JProgressBar();
-				ausgabeProgress.put(FiAusfallZeile.class, fiAusfJPrg);
-				addLine(row++, "Fi Ausfall", fiAusfJPrg);
+                addLine(row++, "Ausgaben", new JSeparator());
 
-				final JProgressBar kennzahlenPfadweise = new JProgressBar();
-				ausgabeProgress.put(KennzahlenPfadweise.class, kennzahlenPfadweise);
-				addLine(row++, "Kennzahlen Pfadweise", kennzahlenPfadweise);
+                final JProgressBar rzg = new JProgressBar();
+                ausgabeProgress.put(RzgZeile.class, rzg);
+                addLine(row++, "rzg", rzg);
 
-				final JProgressBar kennzahlenPfadweiseLob = new JProgressBar();
-				ausgabeProgress.put(KennzahlenPfadweiseLoB.class, kennzahlenPfadweiseLob);
-				addLine(row++, "Kennzahlen Pfadweise LoB", kennzahlenPfadweiseLob);
+                final JProgressBar agg = new JProgressBar();
+                ausgabeProgress.put(AggZeile.class, agg);
+                addLine(row++, "agg", agg);
 
-				final JProgressBar mittelwerteZeitschrittig = new JProgressBar();
-				ausgabeProgress.put(Mittelwerte.class, mittelwerteZeitschrittig);
-				addLine(row++, "Mittelwerte zeitschrittig", mittelwerteZeitschrittig);
-				
-				final JProgressBar mittelwerteJPBar = new JProgressBar();
-				ausgabeProgress.put(KennzahlenMittelung.class, mittelwerteJPBar);
-				addLine(row++, "Schätzer Mittelwerte", mittelwerteJPBar);
-				
-				final JProgressBar mittelwerteLoBJPBar = new JProgressBar();
-				ausgabeProgress.put(KennzahlenMittelungLoB.class, mittelwerteLoBJPBar);
-				addLine(row++, "Schätzer Mittelwerte LoB", mittelwerteLoBJPBar);
+                final JProgressBar fiAusfJPrg = new JProgressBar();
+                ausgabeProgress.put(FiAusfallZeile.class, fiAusfJPrg);
+                addLine(row++, "Fi Ausfall", fiAusfJPrg);
 
-			}
-		};
-		add(center, BorderLayout.CENTER);
+                final JProgressBar kennzahlenPfadweise = new JProgressBar();
+                ausgabeProgress.put(KennzahlenPfadweise.class, kennzahlenPfadweise);
+                addLine(row++, "Kennzahlen Pfadweise", kennzahlenPfadweise);
 
-		final JPanel buttonPanel = new JPanel() {
-			{
-				final JButton abbruch = new JButton("Abbruch");
-				abbruch.addActionListener(e -> exitCode = ExitCode.ABBRUCH);
-				add(abbruch);
-			}
-		};
-		add(buttonPanel, BorderLayout.SOUTH);
+                final JProgressBar kennzahlenPfadweiseLob = new JProgressBar();
+                ausgabeProgress.put(KennzahlenPfadweiseLoB.class, kennzahlenPfadweiseLob);
+                addLine(row++, "Kennzahlen Pfadweise LoB", kennzahlenPfadweiseLob);
 
-		pack();
+                final JProgressBar mittelwerteZeitschrittig = new JProgressBar();
+                ausgabeProgress.put(Mittelwerte.class, mittelwerteZeitschrittig);
+                addLine(row++, "Mittelwerte zeitschrittig", mittelwerteZeitschrittig);
 
-		final RechenThread rechenThread = new RechenThread(this, eingabe, vuParameter);
-		new Thread(rechenThread).start();
+                final JProgressBar mittelwerteJPBar = new JProgressBar();
+                ausgabeProgress.put(KennzahlenMittelung.class, mittelwerteJPBar);
+                addLine(row++, "Schätzer Mittelwerte", mittelwerteJPBar);
 
-		setVisible(true);
-	}
+                final JProgressBar mittelwerteLoBJPBar = new JProgressBar();
+                ausgabeProgress.put(KennzahlenMittelungLoB.class, mittelwerteLoBJPBar);
+                addLine(row++, "Schätzer Mittelwerte LoB", mittelwerteLoBJPBar);
 
-	/**
-	 * Die letzte durchgeführte Berechnung. Dies ist die Berechnung des letzten Pfades des letzten Szenarios.
-	 * 
-	 * @return die Berechnung
-	 */
-	public BerechnungResultat getLetzteBerechnung() {
-		return berechnungResultat;
-	}
+            }
+        };
+        add(center, BorderLayout.CENTER);
 
-	/**
-	 * Art der Beendigung der Rechnung.
-	 * 
-	 * @return der Code
-	 */
-	public ExitCode getExitCode() {
-		return exitCode;
-	}
+        final JPanel buttonPanel = new JPanel() {
 
-	/**
-	 * Exception, die den Abbruch verursachte.
-	 * 
-	 * @return die Exception
-	 */
-	public Throwable getCrashReason() {
-		return crashReason;
-	}
+            {
+                final JButton abbruch = new JButton("Abbruch");
+                abbruch.addActionListener(e -> exitCode = ExitCode.ABBRUCH);
+                add(abbruch);
+            }
+        };
+        add(buttonPanel, BorderLayout.SOUTH);
 
-	@Override
-	public void berechnungBeendet(final BerechnungResultat berechnung) {
-		this.berechnungResultat = berechnung;
-		dispose();
-	}
+        pack();
 
-	@Override
-	public void berechnungGechrashed(Throwable reason) {
-		this.exitCode = ExitCode.FEHLER;
-		this.crashReason = reason;
-		dispose();
-	}
+        final RechenThread rechenThread = new RechenThread(this, eingabe, vuParameter);
+        new Thread(rechenThread).start();
 
-	@Override
-	public void setSznrPercent(int id, int i) {
-		if (sznrProgress.containsKey(id)) {
-			SwingUtilities.invokeLater(() -> sznrProgress.get(id).setValue(i));
-		}
-	}
+        setVisible(true);
+    }
 
-	@Override
-	public void setBerechnungPercent(int id, int lastPercent) {
-		if (berechnungProgress.containsKey(id)) {
-			SwingUtilities.invokeLater(() -> berechnungProgress.get(id).setValue(lastPercent));
-		}
-	}
+    /**
+     * Die letzte durchgeführte Berechnung. Dies ist die Berechnung des letzten Pfades des letzten Szenarios.
+     * 
+     * @return die Berechnung
+     */
+    public BerechnungResultat getLetzteBerechnung() {
+        return berechnungResultat;
+    }
 
-	@Override
-	public boolean isAbbruch() {
-		return getExitCode() == ExitCode.ABBRUCH;
-	}
+    /**
+     * Art der Beendigung der Rechnung.
+     * 
+     * @return der Code
+     */
+    public ExitCode getExitCode() {
+        return exitCode;
+    }
 
-	@Override
-	public void setAusgabePercent(Class<?> klasse, int percent) {
-		if (ausgabeProgress.containsKey(klasse)) {
-			SwingUtilities.invokeLater(() -> ausgabeProgress.get(klasse).setValue(percent));
-		}
+    /**
+     * Exception, die den Abbruch verursachte.
+     * 
+     * @return die Exception
+     */
+    public Throwable getCrashReason() {
+        return crashReason;
+    }
 
-	}
+    @Override
+    public void berechnungBeendet(final BerechnungResultat berechnung) {
+        this.berechnungResultat = berechnung;
+        dispose();
+    }
+
+    @Override
+    public void berechnungGechrashed(Throwable reason) {
+        this.exitCode = ExitCode.FEHLER;
+        this.crashReason = reason;
+        dispose();
+    }
+
+    @Override
+    public void setSznrPercent(int id, int i) {
+        if (sznrProgress.containsKey(id)) {
+            SwingUtilities.invokeLater(() -> sznrProgress.get(id).setValue(i));
+        }
+    }
+
+    @Override
+    public void setBerechnungPercent(int id, int lastPercent) {
+        if (berechnungProgress.containsKey(id)) {
+            SwingUtilities.invokeLater(() -> berechnungProgress.get(id).setValue(lastPercent));
+        }
+    }
+
+    @Override
+    public boolean isAbbruch() {
+        return getExitCode() == ExitCode.ABBRUCH;
+    }
+
+    @Override
+    public void setAusgabePercent(Class<?> klasse, int percent) {
+        if (ausgabeProgress.containsKey(klasse)) {
+            SwingUtilities.invokeLater(() -> ausgabeProgress.get(klasse).setValue(percent));
+        }
+
+    }
 }

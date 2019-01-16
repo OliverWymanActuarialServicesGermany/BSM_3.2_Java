@@ -2,7 +2,6 @@ package de.gdv.bsm.vu.kennzahlen;
 
 import static de.gdv.bsm.vu.module.DiskontFunktion.df;
 import static de.gdv.bsm.vu.module.DiskontFunktion.dfVu;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import de.gdv.bsm.intern.applic.TableField;
 import de.gdv.bsm.vu.berechnung.AggZeile;
 
@@ -42,280 +40,367 @@ import de.gdv.bsm.vu.berechnung.AggZeile;
  * <b>Simulationsmodell © GDV 2016</b>
  */
 public class KennzahlenPfadweise {
-	@TableField
-	private final int szenarioId;
-	@TableField
-	private final int pfad;
-	@TableField(nachKomma = 0)
-	private final double zag;
-	@TableField(nachKomma = 0)
-	private final double be;
-	@TableField(nachKomma = 2)
-	private final double gcr;
-	@TableField
-	private final double grnd;
-	@TableField
-	private final double steuer;
-	@TableField(nachKomma = 0)
-	private final double mwPassiva;
-	@TableField(nachKomma = 0)
-	private final double ueberschussFond;
-	@TableField(nachKomma = 0)
-	private final double ewGar;
-	@TableField(nachKomma = 2)
-	private final double rr;
-	@TableField(nachKomma = 2)
-	private final double epifp;
-	@TableField(nachKomma = 2)
-	private final double kbm;
-	@TableField(nachKomma = 2)
-	private final double zueb;
-	@TableField(nachKomma = 2)
-	private final double optionen;
 
-	/**
-	 * Erstelle die Kennzahlen zu einem Pfad anhand der Agg-Zeilen.
-	 * 
-	 * @param szenarioId
-	 *            zu dem die Berechnung gehört
-	 * @param pfad
-	 *            der Berechnung
-	 * @param aggZeilen
-	 *            über alle Zeiten
-	 * @param monat
-	 *            der Zahlungsmonat aus den zeitunabhängigen Managementregeln
-	 */
-	public KennzahlenPfadweise(final int szenarioId, final int pfad, final List<AggZeile> aggZeilen,
-			final double monat) {
-		this.szenarioId = szenarioId;
-		this.pfad = pfad;
-		zag = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat) + df(z.getZagEndzahlung(), z))
-				.sum();
+    @TableField
+    private final int szenarioId;
+    @TableField
+    private final int pfad;
+    @TableField(nachKomma = 0)
+    private final double zag;
+    @TableField(nachKomma = 0)
+    private final double be;
+    @TableField(nachKomma = 2)
+    private final double gcr;
+    @TableField
+    private final double grnd;
+    @TableField
+    private final double steuer;
+    @TableField(nachKomma = 0)
+    private final double mwPassiva;
+    @TableField(nachKomma = 0)
+    private final double ueberschussFond;
+    @TableField(nachKomma = 0)
+    private final double ewGar;
+    @TableField(nachKomma = 2)
+    private final double rr;
+    @TableField(nachKomma = 2)
+    private final double epifp;
+    @TableField(nachKomma = 2)
+    private final double kbm;
+    @TableField(nachKomma = 2)
+    private final double zueb;
+    @TableField(nachKomma = 2)
+    private final double optionen;
 
-		be = aggZeilen.stream()
-				.mapToDouble(z -> dfVu(z.getLGesAgg(), z, monat) + df(z.getEndZahlungAgg(), z)
-						- dfVu(z.getBStochAgg(), z, monat) + dfVu(z.getKStochAgg(), z, monat)
-						+ df(z.getAufwendungenKa(), z))
-				.sum();
+    // BSM MR IN <
+    @TableField(nachKomma = 2)
+    private final double rvEffektRmZ;
 
-		gcr = aggZeilen.stream().mapToDouble(z -> dfVu(z.getGcrUeB(), z, monat)).sum();
-		grnd = aggZeilen.stream().mapToDouble(z -> df(z.getRueckZahlung(), z) + df(z.getZinsen(), z)).sum();
-		steuer = aggZeilen.stream().mapToDouble(z -> df(z.getErtragsSteuerLs(), z)).sum();
-		mwPassiva = aggZeilen.stream()
-				.mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat) + df(z.getZagEndzahlung(), z)
-						+ dfVu(z.getLGesAgg(), z, monat) + df(z.getEndZahlungAgg(), z)
-						- dfVu(z.getBStochAgg(), z, monat) + dfVu(z.getKStochAgg(), z, monat)
-						+ df(z.getAufwendungenKa(), z) + dfVu(z.getGcrUeB(), z, monat) + df(z.getRueckZahlung(), z)
-						+ df(z.getZinsen(), z) + df(z.getErtragsSteuerLs(), z) + dfVu(z.getCfRvstochAgg(), z, monat))
-				.sum();
-		ueberschussFond = aggZeilen.stream().mapToDouble(z -> df(z.getCashflowSf(), z)).sum();
-		ewGar = aggZeilen.stream().mapToDouble(z -> dfVu(z.getLGarAgg(), z, monat) + dfVu(z.getKAgg(), z, monat)
-				- dfVu(z.getBAgg(), z, monat) + df(z.getAufwendungenKa(), z)).sum();
-		rr = aggZeilen.stream().mapToDouble(z -> -dfVu(z.getCfRvstochAgg(), z, monat)).sum();
-		epifp = aggZeilen.stream().mapToDouble(z -> df(z.getJueVnKP(), z)).sum();
-		kbm = aggZeilen.stream().mapToDouble(z -> dfVu(z.getCashflowGesamt(), z, monat)).sum();
-		zueb = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZuebCashflowAgg(), z, monat) + df(z.getEndZahlungAgg(), z))
-				.sum();
-		optionen = aggZeilen.stream().mapToDouble(z -> dfVu(z.getOptionenCashflowAgg(), z, monat)).sum();
+    @TableField(nachKomma = 2)
+    private final double rvEffektRisikoerg;
 
-	}
+    @TableField(nachKomma = 2)
+    private final double rvEffektUeErgebnis;
 
-	/**
-	 * @return the szenarioId
-	 */
-	public int getSzenarioId() {
-		return szenarioId;
-	}
+    @TableField(nachKomma = 2)
+    private final double reRecoverable;
 
-	/**
-	 * @return the pfad
-	 */
-	public int getPfad() {
-		return pfad;
-	}
+    @TableField(nachKomma = 2)
+    private final double reRecOhneDf;
 
-	/**
-	 * @return the zagKlassik
-	 */
-	public double getZag() {
-		return zag;
-	}
+    // Zur Fehlersuche: Ausgabe der Einzelgrößen von mwPassiva
+    //    @TableField(nachKomma = 2)
+    //    private final double KPzagFaellig;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPzagEndzahlung;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPlGesAgg;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPendZahlungAgg;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPbStochAgg;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPkStochAgg;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPaufwendungenKA;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPgrUeB;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPrueckZahlung;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPzinsen;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPertragsSteuerLs;
+    //    @TableField(nachKomma = 2)
+    //    private final double KPcfRvstochAgg;
+    // BSM MR IN >
 
-	/**
-	 * @return the be
-	 */
-	public double getBe() {
-		return be;
-	}
+    /**
+     * Erstelle die Kennzahlen zu einem Pfad anhand der Agg-Zeilen.
+     * 
+     * @param szenarioId
+     *            zu dem die Berechnung gehört
+     * @param pfad
+     *            der Berechnung
+     * @param aggZeilen
+     *            über alle Zeiten
+     * @param monat
+     *            der Zahlungsmonat aus den zeitunabhängigen Managementregeln
+     */
+    public KennzahlenPfadweise(final int szenarioId, final int pfad, final List<AggZeile> aggZeilen,
+            final double monat) {
+        this.szenarioId = szenarioId;
+        this.pfad = pfad;
+        zag = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat) + df(z.getZagEndzahlung(), z))
+                .sum();
 
-	/**
-	 * @return the grcKlassik
-	 */
-	public double getGrcKlassik() {
-		return gcr;
-	}
+        be = aggZeilen.stream()
+                .mapToDouble(z -> dfVu(z.getLGesAgg(), z, monat) + df(z.getEndZahlungAgg(), z)
+                        - dfVu(z.getBStochAgg(), z, monat) + dfVu(z.getKStochAgg(), z, monat)
+                        + df(z.getAufwendungenKa(), z))
+                .sum();
 
-	/**
-	 * @return the grnd
-	 */
-	public double getGrnd() {
-		return grnd;
-	}
+        gcr = aggZeilen.stream().mapToDouble(z -> dfVu(z.getGcrUeB(), z, monat)).sum();
+        grnd = aggZeilen.stream().mapToDouble(z -> df(z.getRueckZahlung(), z) + df(z.getZinsen(), z)).sum();
+        steuer = aggZeilen.stream().mapToDouble(z -> df(z.getErtragsSteuerLs(), z)).sum();
+        // BSM MR IN <
+        //        mwPassiva = aggZeilen.stream()
+        //                .mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat) + df(z.getZagEndzahlung(), z)
+        //                        + dfVu(z.getLGesAgg(), z, monat) + df(z.getEndZahlungAgg(), z)
+        //                        - dfVu(z.getBStochAgg(), z, monat) + dfVu(z.getKStochAgg(), z, monat)
+        //                        + df(z.getAufwendungenKa(), z) + dfVu(z.getGcrUeB(), z, monat) + df(z.getRueckZahlung(), z)
+        //                        + df(z.getZinsen(), z) + df(z.getErtragsSteuerLs(), z) + dfVu(z.getCfRvstochAgg(), z, monat))
+        //                .sum();
+        // RV Cashflow geht in mwPassiva ein (negatives Vorzeichen wie z.B. Beiträge) 
+        mwPassiva = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat) + df(z.getZagEndzahlung(), z)
+                + dfVu(z.getLGesAgg(), z, monat) + df(z.getEndZahlungAgg(), z) - dfVu(z.getBStochAgg(), z, monat)
+                + dfVu(z.getKStochAgg(), z, monat) + df(z.getAufwendungenKa(), z) + dfVu(z.getGcrUeB(), z, monat)
+                + df(z.getRueckZahlung(), z) + df(z.getZinsen(), z) + df(z.getErtragsSteuerLs(), z)
+                + dfVu(z.getCfRvstochAgg(), z, monat) - df(z.getRvCFAggInklZe(), z)).sum();
+        // BSM MR IN >
+        ueberschussFond = aggZeilen.stream().mapToDouble(z -> df(z.getCashflowSf(), z)).sum();
+        ewGar = aggZeilen.stream().mapToDouble(z -> dfVu(z.getLGarAgg(), z, monat) + dfVu(z.getKAgg(), z, monat)
+                - dfVu(z.getBAgg(), z, monat) + df(z.getAufwendungenKa(), z)).sum();
+        rr = aggZeilen.stream().mapToDouble(z -> -dfVu(z.getCfRvstochAgg(), z, monat)).sum();
+        epifp = aggZeilen.stream().mapToDouble(z -> df(z.getJueVnKP(), z)).sum();
+        kbm = aggZeilen.stream().mapToDouble(z -> dfVu(z.getCashflowGesamt(), z, monat)).sum();
+        zueb = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZuebCashflowAgg(), z, monat) + df(z.getEndZahlungAgg(), z))
+                .sum();
+        optionen = aggZeilen.stream().mapToDouble(z -> dfVu(z.getOptionenCashflowAgg(), z, monat)).sum();
 
-	/**
-	 * @return the steuer
-	 */
-	public double getSteuer() {
-		return steuer;
-	}
+        // BSM MR IN <
+        rvEffektRmZ = aggZeilen.stream().mapToDouble(z -> df(z.getRvEffRmzAlt(), z) + df(z.getRvEffRmzNeu(), z)).sum();
 
-	/**
-	 * @return the mwPassiva
-	 */
-	public double getMwPassiva() {
-		return mwPassiva;
-	}
+        rvEffektRisikoerg = aggZeilen.stream().mapToDouble(z -> df(z.getRvEffReAlt(), z) + df(z.getRvEffReNeu(), z))
+                .sum();
 
-	/**
-	 * @return the ueberschussFond
-	 */
-	public double getUeberschussFond() {
-		return ueberschussFond;
-	}
+        rvEffektUeErgebnis = aggZeilen.stream().mapToDouble(z -> df(z.getRvEffUeeAlt(), z) + df(z.getRvEffUeeNeu(), z))
+                .sum();
 
-	/**
-	 * @return the epIfp
-	 */
-	public double getEpIfp() {
-		return epifp;
-	}
+        reRecoverable = aggZeilen.stream().mapToDouble(z -> df(z.getRvCFAggInklZe(), z)).sum();
+        //        reRecOhneDf   = aggZeilen.stream().mapToDouble(z -> identity(z.getRvCFAggInklZe(), z)).sum();
+        reRecOhneDf = aggZeilen.stream().mapToDouble(z -> z.getRvCFAggInklZe()).sum();
 
-	/**
-	 * @return the GCR
-	 */
-	public double getGcr() {
-		return gcr;
-	}
+        //        KPzagFaellig = aggZeilen.stream().mapToDouble(z -> dfVu(z.getZagFaellig(), z, monat)).sum();
+        //        KPzagEndzahlung = aggZeilen.stream().mapToDouble(z -> df(z.getZagEndzahlung(), z)).sum();
+        //        KPlGesAgg = aggZeilen.stream().mapToDouble(z -> dfVu(z.getLGesAgg(), z, monat)).sum();
+        //        KPendZahlungAgg = aggZeilen.stream().mapToDouble(z -> df(z.getEndZahlungAgg(), z)).sum();
+        //        KPbStochAgg = aggZeilen.stream().mapToDouble(z -> dfVu(z.getBStochAgg(), z, monat)).sum();
+        //        KPkStochAgg = aggZeilen.stream().mapToDouble(z -> dfVu(z.getKStochAgg(), z, monat)).sum();
+        //        KPaufwendungenKA = aggZeilen.stream().mapToDouble(z -> df(z.getAufwendungenKa(), z)).sum();
+        //        KPgrUeB = aggZeilen.stream().mapToDouble(z -> dfVu(z.getGcrUeB(), z, monat)).sum();
+        //        KPrueckZahlung = aggZeilen.stream().mapToDouble(z -> df(z.getRueckZahlung(), z)).sum();
+        //        KPzinsen = aggZeilen.stream().mapToDouble(z -> df(z.getZinsen(), z)).sum();
+        //        KPertragsSteuerLs = aggZeilen.stream().mapToDouble(z -> df(z.getErtragsSteuerLs(), z)).sum();
+        //        KPcfRvstochAgg = aggZeilen.stream().mapToDouble(z -> dfVu(z.getCfRvstochAgg(), z, monat)).sum();
+        // BSM MR IN >
+    }
 
-	/**
-	 * @return the EW_Gar
-	 */
-	public double getEwGar() {
-		return ewGar;
-	}
+    /**
+     * @return the szenarioId
+     */
+    public int getSzenarioId() {
+        return szenarioId;
+    }
 
-	/**
-	 * @return the RR
-	 */
-	public double getRr() {
-		return rr;
-	}
+    /**
+     * @return the pfad
+     */
+    public int getPfad() {
+        return pfad;
+    }
 
-	/**
-	 * @return the epKBM
-	 */
-	public double getKbm() {
-		return kbm;
-	}
+    /**
+     * @return the zagKlassik
+     */
+    public double getZag() {
+        return zag;
+    }
 
-	/**
-	 * @return the ZUEB
-	 */
-	public double getZueb() {
-		return zueb;
-	}
+    /**
+     * @return the be
+     */
+    public double getBe() {
+        return be;
+    }
 
-	/**
-	 * @return the Optionen
-	 */
-	public double getOptionen() {
-		return optionen;
-	}
+    /**
+     * @return the grcKlassik
+     */
+    public double getGrcKlassik() {
+        return gcr;
+    }
 
-	/**
-	 * Ausgabe der ersten vier Spalten des Blattes Schaetzer Mittelwerte.
-	 * 
-	 * @param ausgabe
-	 *            Ausgabedatei (voller Pfad)
-	 * @param kp
-	 *            Kennzahlen pfadweise zur Ermittlung der Stressszenarien
-	 * @throws FileNotFoundException
-	 *             bei Ausgabefehlern
-	 */
-	public static void writeSchaeterMittelwerte(final File ausgabe, final List<KennzahlenPfadweise> kp)
-			throws FileNotFoundException {
-		final List<Integer> szenarien = new ArrayList<>();
-		int lastValue = Integer.MIN_VALUE;
-		for (KennzahlenPfadweise k : kp) {
-			final int id = k.getSzenarioId();
-			if (id != lastValue) {
-				szenarien.add(id);
-				lastValue = id;
-			}
-		}
-		try (final PrintStream out = new PrintStream(new FileOutputStream(ausgabe))) {
-			writeSchaeterMittelwerteById(out, szenarien);
-		}
-	}
+    /**
+     * @return the grnd
+     */
+    public double getGrnd() {
+        return grnd;
+    }
 
-	private final static List<Field> ausgabeFelder = new ArrayList<>();
-	private final static Map<String, String> spaltenNamen = new HashMap<>();
+    /**
+     * @return the steuer
+     */
+    public double getSteuer() {
+        return steuer;
+    }
 
-	static {
-		char spalte1 = 'A';
-		char spalte2 = ' ';
-		for (Field field : KennzahlenPfadweise.class.getDeclaredFields()) {
-			final TableField tableField = field.getAnnotation(TableField.class);
-			if (tableField != null) {
-				final String spaltenName = (spalte2 == ' ' ? "" : String.valueOf(spalte2)) + String.valueOf(spalte1);
-				if (field.getType().equals(double.class)) {
-					ausgabeFelder.add(field);
-					spaltenNamen.put(field.getName(), spaltenName);
-				}
-				if (spalte1 == 'Z') {
-					spalte1 = 'A';
-					spalte2 = (char) (spalte2 + 1);
-				} else {
-					spalte1 = (char) (spalte1 + 1);
-				}
-			}
+    /**
+     * @return the mwPassiva
+     */
+    public double getMwPassiva() {
+        return mwPassiva;
+    }
 
-		}
+    /**
+     * @return the ueberschussFond
+     */
+    public double getUeberschussFond() {
+        return ueberschussFond;
+    }
 
-	}
+    /**
+     * @return the epIfp
+     */
+    public double getEpIfp() {
+        return epifp;
+    }
 
-	/**
-	 * Ausgabe der ersten vier Spalten des Blattes Schaetzer Mittelwerte.
-	 * 
-	 * @param ausgabe
-	 *            Ausgabedatei (voller Pfad)
-	 * @param szenarien
-	 *            Liste der auszugebenden Szenarien
-	 */
-	public static void writeSchaeterMittelwerteById(final PrintStream ausgabe, final List<Integer> szenarien) {
-		ausgabe.println("StressSzenario;Kennzahl;Spalte;Spalte CV");
-		for (int szenario : szenarien) {
-			for (Field field : ausgabeFelder) {
-				final String cvKennzahlen = field.getAnnotation(TableField.class).cvKennzahlen();
-				final String cvSpalte = getCvSpalte(cvKennzahlen);
-				ausgabe.println(
-						szenario + ";" + field.getName() + ";" + spaltenNamen.get(field.getName()) + ";" + cvSpalte);
-			}
-		}
-	}
+    /**
+     * @return the GCR
+     */
+    public double getGcr() {
+        return gcr;
+    }
 
-	/**
-	 * Ermittle zu einem Feldnamen den Spaltennamen. Das Feld muss in dieser Klasse definiert sein, die Annotation
-	 * {@link TableField} besitzen und vom Typ double sein.
-	 * 
-	 * @param cvName
-	 *            der Feldname
-	 * @return die Spalte in Excel (A, B, ..., AA, AB, ...)
-	 */
-	public static String getCvSpalte(final String cvName) {
-		if (!spaltenNamen.containsKey(cvName)) {
-			throw new IllegalArgumentException("Der Spaltenname " + cvName + " ist in KennzahlenPfadweise unbekannt.");
-		}
-		return spaltenNamen.get(cvName);
-	}
+    /**
+     * @return the EW_Gar
+     */
+    public double getEwGar() {
+        return ewGar;
+    }
+
+    /**
+     * @return the RR
+     */
+    public double getRr() {
+        return rr;
+    }
+
+    /**
+     * @return the epKBM
+     */
+    public double getKbm() {
+        return kbm;
+    }
+
+    /**
+     * @return the ZUEB
+     */
+    public double getZueb() {
+        return zueb;
+    }
+
+    /**
+     * @return the Optionen
+     */
+    public double getOptionen() {
+        return optionen;
+    }
+
+    // BSM MR IN <
+    /**
+     * @return the Reinsurance Recoverable
+     */
+    public double getReRecoverable() {
+        return reRecoverable;
+    }
+    // BSM MR IN >
+
+    /**
+     * Ausgabe der ersten vier Spalten des Blattes Schaetzer Mittelwerte.
+     * 
+     * @param ausgabe
+     *            Ausgabedatei (voller Pfad)
+     * @param kp
+     *            Kennzahlen pfadweise zur Ermittlung der Stressszenarien
+     * @throws FileNotFoundException
+     *             bei Ausgabefehlern
+     */
+    public static void writeSchaeterMittelwerte(final File ausgabe, final List<KennzahlenPfadweise> kp)
+            throws FileNotFoundException {
+        final List<Integer> szenarien = new ArrayList<>();
+        int lastValue = Integer.MIN_VALUE;
+        for (KennzahlenPfadweise k : kp) {
+            final int id = k.getSzenarioId();
+            if (id != lastValue) {
+                szenarien.add(id);
+                lastValue = id;
+            }
+        }
+        try (final PrintStream out = new PrintStream(new FileOutputStream(ausgabe))) {
+            writeSchaeterMittelwerteById(out, szenarien);
+        }
+    }
+
+    private final static List<Field> ausgabeFelder = new ArrayList<>();
+    private final static Map<String, String> spaltenNamen = new HashMap<>();
+
+    static {
+        char spalte1 = 'A';
+        char spalte2 = ' ';
+        for (Field field : KennzahlenPfadweise.class.getDeclaredFields()) {
+            final TableField tableField = field.getAnnotation(TableField.class);
+            if (tableField != null) {
+                final String spaltenName = (spalte2 == ' ' ? "" : String.valueOf(spalte2)) + String.valueOf(spalte1);
+                if (field.getType().equals(double.class)) {
+                    ausgabeFelder.add(field);
+                    spaltenNamen.put(field.getName(), spaltenName);
+                }
+                if (spalte1 == 'Z') {
+                    spalte1 = 'A';
+                    spalte2 = (char) (spalte2 + 1);
+                } else {
+                    spalte1 = (char) (spalte1 + 1);
+                }
+            }
+
+        }
+
+    }
+
+    /**
+     * Ausgabe der ersten vier Spalten des Blattes Schaetzer Mittelwerte.
+     * 
+     * @param ausgabe
+     *            Ausgabedatei (voller Pfad)
+     * @param szenarien
+     *            Liste der auszugebenden Szenarien
+     */
+    public static void writeSchaeterMittelwerteById(final PrintStream ausgabe, final List<Integer> szenarien) {
+        ausgabe.println("StressSzenario;Kennzahl;Spalte;Spalte CV");
+        for (int szenario : szenarien) {
+            for (Field field : ausgabeFelder) {
+                final String cvKennzahlen = field.getAnnotation(TableField.class).cvKennzahlen();
+                final String cvSpalte = getCvSpalte(cvKennzahlen);
+                ausgabe.println(
+                        szenario + ";" + field.getName() + ";" + spaltenNamen.get(field.getName()) + ";" + cvSpalte);
+            }
+        }
+    }
+
+    /**
+     * Ermittle zu einem Feldnamen den Spaltennamen. Das Feld muss in dieser Klasse definiert sein, die Annotation
+     * {@link TableField} besitzen und vom Typ double sein.
+     * 
+     * @param cvName
+     *            der Feldname
+     * @return die Spalte in Excel (A, B, ..., AA, AB, ...)
+     */
+    public static String getCvSpalte(final String cvName) {
+        if (!spaltenNamen.containsKey(cvName)) {
+            throw new IllegalArgumentException("Der Spaltenname " + cvName + " ist in KennzahlenPfadweise unbekannt.");
+        }
+        return spaltenNamen.get(cvName);
+    }
 }
