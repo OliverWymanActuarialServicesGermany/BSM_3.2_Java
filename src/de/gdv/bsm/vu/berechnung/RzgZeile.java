@@ -656,8 +656,14 @@ public class RzgZeile {
             kostenStoch = Kundenverhalten.kostenStoch(kosten, vg.lambda);
             risikoUebStoch = Kundenverhalten.risikoUebStoch(risikoErgebnis, vg.lambda);
             kostenUebStoch = Kundenverhalten.kostenUebStoch(uebrigesErgebnis, vg.lambda);
-            kostenueberschussBestand = Rohueberschuss.kostenueberschussBestand(kostenUebStoch,
-                    berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft());
+            // OW_F.Wellens
+			if(berechnung.isOWRechnen() && berechnung.getDynManReg().getAnteil_NG_am_uebrigen_Ergebnis()){
+				kostenueberschussBestand = Rohueberschuss.kostenueberschussBestand(kostenUebStoch,
+						berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[szenarioId]);
+			} else {
+				kostenueberschussBestand = Rohueberschuss.kostenueberschussBestand(kostenUebStoch,
+						berechnung.getZeitabhManReg().get(zeit).getAnteilUebrigenErgebnisseNeugeschaeft()[0]);
+			}
 
             cfRvStoch = Kundenverhalten.cfRvStoch(cfEvuRvu, vg.lambda);
             ziRaZuStoch = Kundenverhalten.ziRaZuStoch(zinsratenZuschlag, vg.lambda);

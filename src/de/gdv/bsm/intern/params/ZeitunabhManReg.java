@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import de.gdv.bsm.intern.csv.CsvReader;
+import de.gdv.bsm.intern.csv.CsvZeile;
 import de.gdv.bsm.intern.csv.LineFormatException;
 
 /**
@@ -26,6 +27,10 @@ import de.gdv.bsm.intern.csv.LineFormatException;
  */
 public class ZeitunabhManReg {
 	// B2
+	//OW_F.Wellens
+	private final double couponTrigger;
+	private final double AktienTrigger;
+	
 	private final double monatZahlung;
 	private final double faelligkeitZinstitel;
 	private final double steuersatz;
@@ -97,7 +102,12 @@ public class ZeitunabhManReg {
 			// skip header
 			csv.readLine();
 
-			monatZahlung = getDouble(csv); // B2
+			//OW_F.Wellens
+			CsvZeile zeileZwei = csv.readLine();
+			monatZahlung = zeileZwei.getDouble(1); // B2
+			couponTrigger =zeileZwei.getDouble(3); // D2
+			AktienTrigger =zeileZwei.getDouble(4); // E2
+			
 			faelligkeitZinstitel = getDouble(csv);
 			steuersatz = getDouble(csv);
 			// B5
@@ -607,4 +617,23 @@ public class ZeitunabhManReg {
 		return abgrenzungImBsmRechnen;
 	}
 
+	// OW_F.Wellens
+	
+	/**
+	 * Coupon-trigger. Feld D2.
+	 *
+	 * @return der Wert
+	 */
+	public double getCouponTrigger() {
+		return couponTrigger;
+	}
+
+	/**
+	 * Aktien-trigger. Feld E2.
+	 *
+	 * @return der Wert
+	 */
+	public double getAktienTrigger() {
+		return AktienTrigger;
+	}
 }

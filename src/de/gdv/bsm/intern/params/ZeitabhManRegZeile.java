@@ -38,12 +38,17 @@ public class ZeitabhManRegZeile {
 	private final double ekZiel;
 	private final double rEk;
 
-	private final double rohUeb;
-	private final double anteilUebrigenErgebnisseNeugeschaeft;
+	// OW_F.Wellens
+	private final double[] rohUeb =new double[40];
+	private final double[] rohUebAlternative =new double[40];
+	private final double[] anteilUebrigenErgebnisseNeugeschaeft = new double[40];
 
 	private final double detProjektionFlv;
-	private final int rlzNeuAnl;
-	private final int fiBwr;
+	//OW_F.Wellens
+	private final int[] rlzNeuAnl = new int[40];
+	private final int[] rlzNeuAnlAlternative = new int[40];
+	private final int[] fiBwr = new int[40];
+	private final int[] fiBwrAlternative = new int[40];
 
 	/**
 	 * Erzeuge eine Zeile aus einer aufbereiteten Zeile der csv-Datei.
@@ -67,11 +72,29 @@ public class ZeitabhManRegZeile {
 		sueafEntnahme = zeile.getInt(8);
 		ekZiel = zeile.getDouble(9);
 		rEk = zeile.getDouble(10);
-		rohUeb = zeile.getDouble(11);
-		anteilUebrigenErgebnisseNeugeschaeft = zeile.getDouble(12);
-		detProjektionFlv = zeile.getDouble(13);
-		rlzNeuAnl = zeile.getInt(14);
-		fiBwr = zeile.getInt(15);
+		// OW_F.Wellens
+		for (int i = 0; i < 40; ++i) {
+			rohUeb[i] = zeile.getDouble(11+i);
+		}
+		for (int i = 0; i < 40; ++i) {
+			rohUebAlternative[i] = zeile.getDouble(51+i);
+		}
+		for (int i = 0; i < 40; ++i) {
+			anteilUebrigenErgebnisseNeugeschaeft[i] = zeile.getDouble(91+i);
+		}
+		detProjektionFlv = zeile.getDouble(131);
+		for (int i = 0; i < 40; ++i) {
+			rlzNeuAnl[i] = zeile.getInt(132+i);
+		}
+		for (int i = 0; i < 40; ++i) {
+			rlzNeuAnlAlternative[i] = zeile.getInt(172+i);
+		}
+		for (int i = 0 ; i < 40; ++i) {
+			fiBwr[i] = zeile.getInt(212+i);
+		}	
+		for (int i = 0; i < 40; ++i) {
+			fiBwrAlternative[i] = zeile.getInt(252+i);
+		}
 	}
 
 	/**
@@ -179,21 +202,33 @@ public class ZeitabhManRegZeile {
 	 * 
 	 * @return der Wert
 	 */
-	public double getRohUeb() {
+	// OW_F.Wellens
+	public double[] getRohUeb() {
 		return rohUeb;
 	}
 
 	/**
-	 * Anteil des übrigen Ergebnisses für das Neugeschäft. Spalte M.
+	 * Zielbeteiligung am Rohüberschuss in % vom Rohüberschuss p_Rohüb. Spalte M.
 	 * 
 	 * @return der Wert
 	 */
-	public double getAnteilUebrigenErgebnisseNeugeschaeft() {
+	// OW_F.Wellens
+	public double[] getRohUebAlternative() {
+		return rohUebAlternative;
+	}
+
+	/**
+	 * Anteil des übrigen Ergebnisses für das Neugeschäft. Spalte N.
+	 * 
+	 * @return der Wert
+	 */
+	// OW_F.Wellens
+	public double[] getAnteilUebrigenErgebnisseNeugeschaeft() {
 		return anteilUebrigenErgebnisseNeugeschaeft;
 	}
 
 	/**
-	 * deterministische Projektion FLV. Spalte N.
+	 * deterministische Projektion FLV. Spalte O.
 	 *
 	 * @return der Wert
 	 */
@@ -202,21 +237,43 @@ public class ZeitabhManRegZeile {
 	}
 
 	/**
-	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte O.
+	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte P.
 	 * 
 	 * @return der Wert
 	 */
-	public int getRlzNeuAnl() {
+	//OW_F.Wellens
+	public int[] getRlzNeuAnl() {
 		return rlzNeuAnl;
 	}
 
+	//OW_F.Wellens
 	/**
-	 * Verrechnungszeitraum für FI-BWR τ_Verechn. Spalte P.
+	 * FI Neuanlage Restlaufzeit RLZ_neuAnl. Spalte Q.
 	 * 
 	 * @return der Wert
 	 */
-	public int getFiBwr() {
+	public int[] getRlzNeuAnlAlternative() {
+		return rlzNeuAnlAlternative;
+	}
+
+	/**
+	 * Verrechnungszeitraum für FI-BWR τ_Verechn. Spalte R.
+	 * 
+	 * @return der Wert
+	 */
+	//OW_F.Wellens
+	public int[] getFiBwr() {
 		return fiBwr;
+	}
+	
+	//OW_F.Wellens
+	/**
+	 * MIL_W.Schalesi: fiBwrAlternative. Spalte S
+	 * 
+	 * @return der Wert
+	 */
+	public int[] getFiBwrAlternative() {
+		return fiBwrAlternative;
 	}
 
 }

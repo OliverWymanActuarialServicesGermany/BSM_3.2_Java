@@ -50,6 +50,9 @@ public class VuParameter {
 	static final String ZEITABH_MAN_REG_FILENAME = "zeitabh.ManReg.csv";
 	static final String SAVE_2_CSV = "save2CSV.csv";
 
+	//OW_F.Wellens
+	public static final String DYN_MAN_REG_FILENAME = "Dyn.ManReg.csv";
+
 	/** Dateiname für die Ausgabe der Kennzahlen pfadweise. */
 	public static final String RZG = "rzg.csv";
 	/** Dateiname für die Ausgabe der Kennzahlen pfadweise. */
@@ -101,6 +104,9 @@ public class VuParameter {
 	private final Save2csv save2csv;
 	private final List<String> lobs;
 
+	//OW_F.Wellens
+	private final DynManReg dynManReg;
+
 	/**
 	 * Erstelle die Zusammenstellung.
 	 * 
@@ -128,6 +134,8 @@ public class VuParameter {
 		zeitabhManReg = new ZeitabhManReg(new File(transferVerzeichnis, ZEITABH_MAN_REG_FILENAME));
 		save2csv = new Save2csv(new File(transferVerzeichnis, SAVE_2_CSV));
 		
+		//OW_F.Wellens
+		dynManReg = new DynManReg(new File(transferVerzeichnis, DYN_MAN_REG_FILENAME));
 		
 		
 
@@ -298,4 +306,13 @@ public class VuParameter {
 		return save2csv;
 	}
 
+	//OW_F.Wellens
+	/**
+	 * Dynamische Einstellungen. Abbild des Blattes <code>Dyn.ManReg</code>.
+	 * 
+	 * @return die Einstellungen
+	 */
+	public DynManReg getDynManReg() {
+		return dynManReg;
+	}
 }

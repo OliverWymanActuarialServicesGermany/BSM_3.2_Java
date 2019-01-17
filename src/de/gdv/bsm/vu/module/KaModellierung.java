@@ -2062,21 +2062,46 @@ public class KaModellierung {
 	 * @return Kapitalertragsdefizit aus den Vorjahren zum Verrechnen
 	 */
 	public static double kedVjVerrechnen(final int t, final ZeitabhManReg manRec, final double[] kedVerrechnung,
-			final int omega) {
+			final int omega, final boolean isOWRechnen, final boolean mmrCouponTriggerBoolean, final boolean mmrAktienTriggerBoolean, final boolean FI_BWR, final int szenarioId) {
 		double kedVjVerrechnen = 0.0;
+		int vzr = 0;
 		if (t < 2) {
 			return kedVjVerrechnen;
 		}
 		if (t < omega) {
 			for (int i = 1; i < t; i++) {
-				int vzr = manRec.get(i).getFiBwr();
+				if (isOWRechnen && (mmrCouponTriggerBoolean || mmrAktienTriggerBoolean)) {
+					if (FI_BWR) {
+						vzr = manRec.get(i).getFiBwrAlternative()[szenarioId];
+					} else {
+						vzr = manRec.get(i).getFiBwrAlternative()[0];
+					}
+				} else {
+					if (FI_BWR) {
+						vzr = manRec.get(i).getFiBwr()[szenarioId];
+					} else {
+						vzr = manRec.get(i).getFiBwr()[0];
+					}
+				}
 				if (i + vzr >= t) {
 					kedVjVerrechnen = kedVjVerrechnen + (nanZero(kedVerrechnung[i]) / vzr);
 				}
 			}
 		} else {
 			for (int i = 1; i <= omega - 1; i++) {
-				int vzr = manRec.get(i).getFiBwr();
+				if (isOWRechnen && (mmrCouponTriggerBoolean || mmrAktienTriggerBoolean)) {
+					if (FI_BWR) {
+						vzr = manRec.get(i).getFiBwrAlternative()[szenarioId];
+					} else {
+						vzr = manRec.get(i).getFiBwrAlternative()[0];
+					}
+				} else {
+					if (FI_BWR) {
+						vzr = manRec.get(i).getFiBwr()[szenarioId];
+					} else {
+						vzr = manRec.get(i).getFiBwr()[0];
+					}
+				}
 				if (i + vzr >= omega) {
 					kedVjVerrechnen = kedVjVerrechnen + ((vzr - omega + i + 1) * nanZero(kedVerrechnung[i] / vzr));
 				}

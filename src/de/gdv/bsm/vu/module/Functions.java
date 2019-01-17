@@ -55,4 +55,44 @@ public class Functions {
 			r += Functions.nanZero(d);
 		return r;
 	}
+	
+	/**
+	 * OW_F.Wellens:
+	 * 
+	 * Summiere maximal die letzten 10 Zahlen eines Arrays.
+	 * 
+	 * @param array
+	 *            das Array
+	 * @return die Summe
+	 */
+	public static double sum10(final double[] array) {
+		double r = 0.0;
+		for (int i = Math.max(0, array.length - 11); i < array.length - 1; i++) {
+			r += Functions.nanZero(array[i]);
+		}
+		return r;
+	}
+
+	/**
+	 * OW_F.Wellens:
+	 * 
+	 * Pruefe ob ein String FALSE oder TRUE bedeutet. 
+	 * Verfügbare Sprachen: Deutsch, Englisch, Französisch, Niederländisch, Italienisch, Polnisch
+	 * 
+	 * @param String
+	 *            Der String
+	 * @return Der boolsche Werte
+	 */
+	public static boolean booleanValueOfString(final String strBool) {
+		boolean boolValue= false;
+		String strTrimed = strBool.trim();
+		
+		if (strTrimed.equals("WAHR") || strTrimed.equals("TRUE") || strTrimed.equals("VRAI") || strTrimed.equals("WAAR") || strTrimed.equals("VERO") || strTrimed.equals("PRAWDA")) {
+			boolValue = true;
+		} else {
+			boolValue = false;
+		}
+		
+		return boolValue;
+	}
 }

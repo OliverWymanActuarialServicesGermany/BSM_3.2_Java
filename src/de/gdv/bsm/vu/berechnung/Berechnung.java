@@ -19,6 +19,7 @@ import com.munichre.bsmrv.MrVuParameter;
 import de.gdv.bsm.intern.applic.Pair;
 import de.gdv.bsm.intern.math.Newton;
 import de.gdv.bsm.intern.params.BwAktivaFi;
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.GenussNachrang;
 import de.gdv.bsm.intern.params.HgbBilanzdaten;
 import de.gdv.bsm.intern.params.LobMapping;
@@ -86,6 +87,10 @@ public class Berechnung {
     private final MrParameterZeitabhaengig mrParamZeitAbh;
     // BSM MR IN >
     final Szenario szenario;
+
+	// OW_F.Wellens - Soll mit OW Anpassungen gerechnet werden?
+	public final boolean OWRechnen;
+	private final DynManReg dynManReg;
 
     /** Konstante UEB. */
     public static final String LOB_MAP_UEB = "UEB";
@@ -214,7 +219,7 @@ public class Berechnung {
      *            die Daten des Zinsszenarios
      */
     public Berechnung(final int szenarioId, final boolean flvRechnen, final boolean negAusfall, final boolean ausgabe,
-            final MrVuParameter vuParameter, final Szenario szenario) {
+            final MrVuParameter vuParameter, final Szenario szenario, final boolean OWRechnen) {
         this.szenarioId = szenarioId;
         this.szenarioName = vuParameter.getSzenarioMapping().getSzenarionMapping(szenarioId).getName();
         this.flvRechnen = flvRechnen;
@@ -235,6 +240,9 @@ public class Berechnung {
         this.mrParamZeitAbh = vuParameter.getMrParameterZeitabhaengig();
         // BSM MR IN >
         this.szenario = szenario;
+
+		this.OWRechnen = OWRechnen;
+		this.dynManReg = vuParameter.getDynManReg();
 
         // Initialisierung diverser Werte:
         eqReFi = hgbBilanzdaten.getEqReFiBuchwert();
@@ -308,13 +316,19 @@ public class Berechnung {
             rzgMap.get(zn.lob).get(zn.zinsGeneration).get(zn.altNeuBestand).get(zn.deckungsStock).add(zn);
         }
 
-        this.zeitHorizont = maxZeit;
-        int maxRlzNeuAnlTemp = 0;
-        for (int t = 1; t <= zeitHorizont; t++) {
-            if (maxRlzNeuAnlTemp < this.zeitabhManReg.get(t).getRlzNeuAnl()) {
-                maxRlzNeuAnlTemp = this.zeitabhManReg.get(t).getRlzNeuAnl();
-            }
-        }
+		this.zeitHorizont = maxZeit;
+		int maxRlzNeuAnlTemp = 0;
+		for (int t = 1; t <= zeitHorizont; t++) {
+			if (isOWRechnen() && vuParameter.getDynManReg().getFI_Neuanl_RLZ()) {
+				if (maxRlzNeuAnlTemp < this.zeitabhManReg.get(t).getRlzNeuAnl()[szenarioId]) {
+					maxRlzNeuAnlTemp = this.zeitabhManReg.get(t).getRlzNeuAnl()[szenarioId];
+				}
+			} else {
+				if (maxRlzNeuAnlTemp < this.zeitabhManReg.get(t).getRlzNeuAnl()[0]) {
+					maxRlzNeuAnlTemp = this.zeitabhManReg.get(t).getRlzNeuAnl()[0];
+				}
+			}
+		}
         maxRlzNeuAnl = maxRlzNeuAnlTemp;
 
         aggFlvZeilen = new ArrayList<>(zeitHorizont + 1);
@@ -963,6 +977,15 @@ public class Berechnung {
     public ZeitabhManReg getZeitabhManReg() {
         return zeitabhManReg;
     }
+   
+	/**
+	 * OW_F.Wellens: Die Daten des Blattes der dynamischen Management-Regeln.
+	 * 
+	 * @return die Paramter
+	 */
+	public DynManReg getDynManReg() {
+		return dynManReg;
+	}
 
     /**
      * ID des zu berechnenden Szenarios.
@@ -1085,4 +1108,12 @@ public class Berechnung {
     }
     // BSM MR IN >
 
+	/**
+	 * MIL_W.Schalesi: Soll mit Milliman Anpassungen gerechnet werden?
+	 * 
+	 * @return der Wert
+	 */
+	public boolean isOWRechnen() {
+		return OWRechnen;
+	}
 }
