@@ -36,6 +36,9 @@ public class Eingabe {
 	private String pfadSzenariensatz = "";
 	private boolean negAusfallwk = false;
 	private boolean ausgabe = false;
+	
+	private String pfadJava = "";
+	private String schaetzerFuerErwartungswerte = "";
 
 	private final List<Pair<Integer, String>> szenarienList;
 	
@@ -103,9 +106,12 @@ public class Eingabe {
 				ausgabe = false;
 			}
 
-			// MIL_W.Schalesi - mit Milliman Anpassungen rechnen
-				final String millimanString = csv.readLine().getString(1).toUpperCase();
-				OWRechnen = Functions.booleanValueOfString(millimanString);
+			schaetzerFuerErwartungswerte = csv.readLine().getString(1);
+			pfadJava = csv.readLine().getString(1);
+			
+			// OW_F.Wellens - mit Oliver Wyman Anpassungen rechnen
+			final String OWString = csv.readLine().getString(1).toUpperCase();
+			OWRechnen = Functions.booleanValueOfString(OWString);
 		}
 
 	}

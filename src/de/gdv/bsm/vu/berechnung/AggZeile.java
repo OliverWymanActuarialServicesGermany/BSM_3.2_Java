@@ -1282,10 +1282,13 @@ public class AggZeile {
 
         if (zeit == 0) {
             kuponEsg = 0.0;
+            preisAktieEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).aktien;
         } else {
             kuponEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit - 1).getKuponRlz(rlz);
+			preisAktieEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).aktien;
         }
         kuponEsgArr[zeit] = kuponEsg;
+        preisAktieEsgArr[zeit] = preisAktieEsg;
 
         kuponEsgII = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).getKuponRlz(1);
         diskontEsg = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit).diskontFunktion;
@@ -1439,6 +1442,7 @@ public class AggZeile {
 
             final PfadZeile pfadZeile = berechnung.szenario.getPfad(pfad).getPfadZeile(zeit);
 
+            //OW_F.Wellens
         	if(berechnung.isOWRechnen() && berechnung.getDynManReg().getFI_Neuanl_RLZ()){
         		mwFiJahresende = KaModellierung.mwFiJahresende(rlz, cfFiZeitschrittig, pfadZeile, pfad, zeit,
 	                    berechnung.bwAktivaFi.getMaxZeitCashflowFi(),
@@ -1509,6 +1513,7 @@ public class AggZeile {
             bwFiAkt = KaModellierung.bwFiAkt(vg.zeit, vg.bwFiAkt, vg.cfFiAkt, vg.keFiAkt, berechnung.fiBuchwertBestand,
                     berechnung.eqBuchwertKlassic, berechnung.reBuchwertKlassic, berechnung.getAggZeile(1).bwEq,
                     berechnung.getAggZeile(1).bwRe, berechnung.bwSaSp, vg.rapVT, (vg.vg == null ? 0.0 : vg.vg.rapVT));
+            //OW_F.Wellens
             kedVjVerrechnen = KaModellierung.kedVjVerrechnen(zeit, berechnung.getZeitabhManReg(), kedVerrechnungArr,
                     berechnung.laengeProjektionDr, berechnung.isOWRechnen(), mmrCouponTriggerBoolean, mmrAktienTriggerBoolean,  berechnung.getDynManReg().getFI_BWR(), szenarioId);
             kedVjVerrechnenArr[zeit] = kedVjVerrechnen;
