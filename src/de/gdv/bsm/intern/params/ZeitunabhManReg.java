@@ -105,8 +105,8 @@ public class ZeitunabhManReg {
 			//OW_F.Wellens
 			CsvZeile zeileZwei = csv.readLine();
 			monatZahlung = zeileZwei.getDouble(1); // B2
-			couponTrigger =zeileZwei.getDouble(3); // D2
-			AktienTrigger =zeileZwei.getDouble(4); // E2
+			couponTrigger =zeileZwei.getDouble(2); // D2
+			AktienTrigger =zeileZwei.getDouble(3); // E2
 			
 			faelligkeitZinstitel = getDouble(csv);
 			steuersatz = getDouble(csv);

@@ -1044,35 +1044,35 @@ public class AggZeile {
 
     double gebuehrRvAbsolut = DOUBLE_INIT;
     
- // MIL_W.Schalesi
+ // OW_F.Wellens
  	/** MMR-Trigger FI Kupon der Neuanlage in t. L 1. */
  	@TableField(testColumn = "JX", nachKomma = 0)
  	double mmrCouponTrigger = 0;
  	double[] mmrCouponTriggerArr;
 
- 	// MIL_W.Schalesi
+ 	// OW_F.Wellens
  	/** MMR-Trigger FI Kupon der Neuanlage in t Boolean. L 1. */
  	@TableField(testColumn = "JY", nachKomma = 0)
  	boolean mmrCouponTriggerBoolean = false;
  	
- 	// MIL_W.Schalesi
+ 	// OW_F.Wellens
  	/** MMR-Trigger FI Kupon der Neuanlage in t. L 1. */
  	@TableField(testColumn = "JZ", nachKomma = 0)
  	double mmrAktienTrigger = 0;
  	double[] mmrAktienTriggerArr;
 
- 	// MIL_W.Schalesi
+ 	// OW_F.Wellens
  	/** MMR-Trigger FI Kupon der Neuanlage in t Boolean. L 1. */
  	@TableField(testColumn = "KA", nachKomma = 0)
  	boolean mmrAktienTriggerBoolean = false;
 
- 	// MIL_W.Schalesi
+ 	// OW_F.Wellens
  	/** MMR-Trigger JÜ. Rekursiv1. */
  	@TableField(testColumn = "KB", nachKomma = 0)
  	double mmrJueTrigger = 0;
  	double[] mmrJueTriggerArr;
 
- 	// MIL_W.Schalesi
+ 	// OW_F.Wellens
  	/** MMR-Trigger JÜ Boolean. Rekursiv1. */
  	@TableField(testColumn = "KC", nachKomma = 0)
  	boolean mmrJueTriggerBoolean = false;
