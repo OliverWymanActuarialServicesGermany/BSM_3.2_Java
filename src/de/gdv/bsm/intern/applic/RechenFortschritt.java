@@ -15,6 +15,7 @@ import javax.swing.JSeparator;
 import javax.swing.SwingUtilities;
 import com.munichre.bsmrv.MrVuParameter;
 import de.gdv.bsm.intern.csv.LineFormatException;
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.Eingabe;
 import de.gdv.bsm.intern.params.SzenarioMapping;
 import de.gdv.bsm.intern.params.SzenarioMappingZeile;
@@ -89,7 +90,7 @@ public class RechenFortschritt extends JDialog implements RechenFortschrittInter
      * @throws LineFormatException
      *             bei csv Lesefehlern
      */
-    public RechenFortschritt(final VuParameter vuParameterParam, final Eingabe eingabe)
+    public RechenFortschritt(final VuParameter vuParameterParam, final Eingabe eingabe, final DynManReg dynManReg)
             throws IOException, LineFormatException {
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -189,7 +190,7 @@ public class RechenFortschritt extends JDialog implements RechenFortschrittInter
 
         pack();
 
-        final RechenThread rechenThread = new RechenThread(this, eingabe, vuParameter);
+        final RechenThread rechenThread = new RechenThread(this, eingabe, vuParameter, dynManReg);
         new Thread(rechenThread).start();
 
         setVisible(true);

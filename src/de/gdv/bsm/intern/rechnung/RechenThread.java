@@ -25,6 +25,7 @@ import de.gdv.bsm.intern.applic.AusgabeThread;
 import de.gdv.bsm.intern.applic.AusgabeThreadTableField;
 import de.gdv.bsm.intern.applic.BerechnungResultat;
 import de.gdv.bsm.intern.applic.RechenFortschrittInterface;
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.Eingabe;
 import de.gdv.bsm.intern.params.SzenarioMapping;
 import de.gdv.bsm.intern.params.SzenarioMappingZeile;
@@ -68,6 +69,7 @@ import de.gdv.bsm.vu.util.BSMLog;
 public class RechenThread implements Runnable {
 
     private final RechenFortschrittInterface fortschritt;
+	private final DynManReg dynManReg;
     private final Eingabe eingabe;
     // BSM MR IN <
     private final MrVuParameter vuParameter;
@@ -105,10 +107,11 @@ public class RechenThread implements Runnable {
      *            Basispfad des Verzeichnisses
      */
     public RechenThread(final RechenFortschrittInterface fortschritt, final Eingabe eingabe,
-            final MrVuParameter vuParameter) {
+            final MrVuParameter vuParameter, final DynManReg dynManReg) {
         this.fortschritt = fortschritt;
         this.eingabe = eingabe;
         this.vuParameter = vuParameter;
+		this.dynManReg = dynManReg;
     }
 
     /**
@@ -219,8 +222,16 @@ public class RechenThread implements Runnable {
                             //Da zumeist auf max abgefragt wird, kann z.B. auch ein einzelner Zeitpunkt oder nur ein Zeitpunkt in einem Pfad fehlen.
                             // Korrektheit der Anzahl der Jahre und der Restlaufzeiten im Szenariensatz überprüfen
                             int maxRlz = szenario.getMaximaleRestlaufzeit();
-                            int rlzNeuanlage = vuParameter.getZeitabhManReg().getList().stream()
-                                    .mapToInt(e -> e.getRlzNeuAnl()).max().getAsInt();
+                            //OW_F.Wellens
+							int rlzNeuanlage = 0;
+							final int sznr = szenarioId;
+							if (eingabe.isOWRechnen() && dynManReg.FI_Neuanl_RLZ == true){
+								rlzNeuanlage = vuParameter.getZeitabhManReg().getList().stream()
+	                                    .mapToInt(e -> e.getRlzNeuAnl()[sznr]).max().getAsInt();
+							} else {
+								rlzNeuanlage = vuParameter.getZeitabhManReg().getList().stream()
+	                                    .mapToInt(e -> e.getRlzNeuAnl()[0]).max().getAsInt();
+							}
                             int k = vuParameter.getBwAktivaFi().getList().size() - 1;
                             for (k = vuParameter.getBwAktivaFi().getList().size() - 1; k >= 0; k--) {
                                 if (vuParameter.getBwAktivaFi().getList().get(k).getCashflowFi() > 0) {
@@ -267,7 +278,7 @@ public class RechenThread implements Runnable {
                     sz.setAntitethischeVariablen(szenario.antitethischeVariablen);
 
                     final Berechnung berechnung = new Berechnung(sz.getId(), eingabe.isFlvRechnen(),
-                            eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario);
+                            eingabe.isNegAusfallwk(), eingabe.isAusgabe(), vuParameter, szenario, eingabe.isOWRechnen());
 
                     if (!ausgabeGeschrieben) {
                         ausgabe.println(

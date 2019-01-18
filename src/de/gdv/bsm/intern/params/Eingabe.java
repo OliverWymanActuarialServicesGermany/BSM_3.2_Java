@@ -7,6 +7,7 @@ import java.util.List;
 import de.gdv.bsm.intern.applic.Pair;
 import de.gdv.bsm.intern.csv.CsvReader;
 import de.gdv.bsm.intern.csv.LineFormatException;
+import de.gdv.bsm.vu.module.Functions;
 
 /**
  * Vorgabeparameter für die Berechnung aus Excel bzw. dem Dialog.
@@ -37,6 +38,9 @@ public class Eingabe {
 	private boolean ausgabe = false;
 
 	private final List<Pair<Integer, String>> szenarienList;
+	
+	// OW_F.Wellens - mit Oliver Wyman Anpassungen rechnen
+	private boolean OWRechnen = false;
 
 	/**
 	 * Erstelle einen default-Parametersatz ohne explizite Eingaben.
@@ -98,6 +102,10 @@ public class Eingabe {
 			} else {
 				ausgabe = false;
 			}
+
+			// MIL_W.Schalesi - mit Milliman Anpassungen rechnen
+				final String millimanString = csv.readLine().getString(1).toUpperCase();
+				OWRechnen = Functions.booleanValueOfString(millimanString);
 		}
 
 	}
@@ -251,4 +259,12 @@ public class Eingabe {
 		return ausgabe;
 	}
 
+	/**
+	 * Soll mit Oliver Wyman Anpassungen gerechnet werden?
+	 * 
+	 * @return ja oder nein
+	 */
+	public boolean isOWRechnen() {
+		return OWRechnen;
+	}
 }

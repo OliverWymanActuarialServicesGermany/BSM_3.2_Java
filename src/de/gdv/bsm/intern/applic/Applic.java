@@ -9,6 +9,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.Eingabe;
 import de.gdv.bsm.intern.params.VuParameter;
 import de.gdv.bsm.vu.util.*;
@@ -92,17 +93,21 @@ public class Applic {
 			final VuParameter vuParameter = new VuParameter(transferDir);
 
 			final File eingabeFile = new File(transferDir, VuParameter.EINGABE_FILENAME);
+			final File dynManRegeFile = new File(transferDir, VuParameter.DYN_MAN_REG_FILENAME);
 			final Eingabe eingabe;
+			final DynManReg dynManReg;
 			if (eingabeFile.exists() && eingabeFile.isFile() && eingabeFile.canRead()) {
 				eingabe = new Eingabe(vuParameter, eingabeFile);
+				dynManReg = new DynManReg(dynManRegeFile);
 			} else {
 				eingabe = new Eingabe(vuParameter);
+				dynManReg = new DynManReg(dynManRegeFile);
 			}
 
 			if (!batch) {
-				new ApplicFrame(vuParameter, eingabe);
+				new ApplicFrame(vuParameter, eingabe, dynManReg);
 			} else {
-				final RechenFortschritt rf = new RechenFortschritt(vuParameter, eingabe);
+				final RechenFortschritt rf = new RechenFortschritt(vuParameter, eingabe, dynManReg);
 				switch (rf.getExitCode()) {
 				case ABBRUCH:
 					System.exit(2);

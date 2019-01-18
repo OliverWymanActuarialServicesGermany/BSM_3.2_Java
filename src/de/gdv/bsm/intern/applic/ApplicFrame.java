@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import de.gdv.bsm.intern.params.DynManReg;
 import de.gdv.bsm.intern.params.Eingabe;
 import de.gdv.bsm.intern.params.VuParameter;
 import de.gdv.bsm.vu.util.BSMLog;
@@ -38,17 +39,19 @@ import de.gdv.bsm.vu.util.BSMLog;
 public class ApplicFrame extends JFrame {
 	private final VuParameter vuParameter;
 	private final Eingabe eingabe;
+	private final DynManReg dynManReg;
 
 	private final JTextField pfadVon = new JTextField(10);
 	private final JTextField pfadBis = new JTextField(10);
 	private final JTextField pfad = new JTextField();
 
-	ApplicFrame(final VuParameter vuParameter, final Eingabe eingabe) {
+	ApplicFrame(final VuParameter vuParameter, final Eingabe eingabe, final DynManReg dynManReg) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setTitle("Branchen-Simulations-Modell");
 
 		this.vuParameter = vuParameter;
 		this.eingabe = eingabe;
+		this.dynManReg = dynManReg;
 
 		final JPanel center = new LabelPanel() {
 			{
@@ -161,7 +164,7 @@ public class ApplicFrame extends JFrame {
 				return;
 			}
 
-			final RechenFortschritt rf = new RechenFortschritt(vuParameter, eingabe);
+			final RechenFortschritt rf = new RechenFortschritt(vuParameter, eingabe, dynManReg);
 			switch (rf.getExitCode()) {
 			case ABBRUCH:
 				break;
