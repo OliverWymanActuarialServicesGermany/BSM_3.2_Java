@@ -1305,7 +1305,7 @@ public class AggZeile {
 			if (berechnung.isOWRechnen() && (preisAktieEsg - preisAktieEsgArr[zeit-1])/preisAktieEsgArr[zeit-1] < berechnung.getZeitunabhManReg().getAktienTrigger()) {
 				mmrAktienTrigger = -1;
 			} else {
-				mmrAktienTrigger = 1;
+				mmrAktienTrigger = 0;
 			}
 		}
 
@@ -2292,7 +2292,7 @@ public class AggZeile {
 			if ((preisAktieEsg - preisAktieEsgArr[zeit-1])/preisAktieEsgArr[zeit-1] < berechnung.getZeitunabhManReg().getAktienTrigger()) {
 				mmrAktienTrigger = -1;
 			} else {
-				mmrAktienTrigger = 1;
+				mmrAktienTrigger = 0;
 			}
 
             jUeZielerhoehung = Rohueberschuss.jUeZielerhoehung(zeit, berechnung.getZeitunabhManReg().isiJuez(), jueZiel,
