@@ -2077,7 +2077,7 @@ public class KaModellierung {
 						vzr = manRec.get(i).getFiBwrAlternative()[0];
 					}
 				} else {
-					if (FI_BWR) {
+					if (isOWRechnen && FI_BWR) {
 						vzr = manRec.get(i).getFiBwr()[szenarioId];
 					} else {
 						vzr = manRec.get(i).getFiBwr()[0];
@@ -2096,7 +2096,7 @@ public class KaModellierung {
 						vzr = manRec.get(i).getFiBwrAlternative()[0];
 					}
 				} else {
-					if (FI_BWR) {
+					if (isOWRechnen && FI_BWR) {
 						vzr = manRec.get(i).getFiBwr()[szenarioId];
 					} else {
 						vzr = manRec.get(i).getFiBwr()[0];
