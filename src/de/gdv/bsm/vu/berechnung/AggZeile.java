@@ -1809,12 +1809,17 @@ public class AggZeile {
             deltaZzrNueb = Rohueberschuss.deltaZzr(zzrNueb, vg.zzrNueb);
 
             gebuehrRv = MrFunktionenAgg.gebuehrRv(zeit, gebuehrRvAbsolut, vg.zedZzr,
-                    mrParamZeitUnAbh.getLfdGebuehrZedZzr(), mrParamZeitUnAbh.getSchalterQuotenRv());
+                    vg.nachrangKumZeAlt + vg.nachrangKumZeNeu, mrParamZeitUnAbh.getLfdGebuehrZedZzr(),
+                    mrParamZeitUnAbh.getSchalterQuotenRv());
 
-            gebuehrRvAlt = MrFunktionenAgg.gebuehrRvBestand(zeit, gebuehrRv, vg.zedZzr, vg.zedZzrAlt, vg.zedZzrAlt,
-                    vg.zedZzrNeu);
-            gebuehrRvNeu = MrFunktionenAgg.gebuehrRvBestand(zeit, gebuehrRv, vg.zedZzr, vg.zedZzrNeu, vg.zedZzrAlt,
-                    vg.zedZzrNeu);
+            gebuehrRvAlt = MrFunktionenAgg.gebuehrRvBestand(zeit, gebuehrRv,
+                    vg.zedZzr + vg.nachrangKumZeAlt + vg.nachrangKumZeNeu, vg.zedZzrAlt + vg.nachrangKumZeAlt,
+                    vg.zedZzrAlt + vg.nachrangKumZeAlt, vg.zedZzrNeu + vg.nachrangKumZeNeu);
+            
+            gebuehrRvNeu = MrFunktionenAgg.gebuehrRvBestand(zeit, gebuehrRv,
+                    vg.zedZzr + vg.nachrangKumZeAlt + vg.nachrangKumZeNeu, vg.zedZzrNeu + vg.nachrangKumZeNeu,
+                    vg.zedZzrAlt + vg.nachrangKumZeAlt, vg.zedZzrNeu + vg.nachrangKumZeNeu);
+
 
             technErgebnis = MrFunktionenAgg.technischesErgebnis(zeit, mrParamZeitUnAbh.getQuotenRvLaufzeit(),
                     mrParamZeitUnAbh.getCapBiometrie(), zedReAlt + zedReNeu, vg.lcf);

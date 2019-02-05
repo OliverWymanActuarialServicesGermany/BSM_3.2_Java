@@ -181,12 +181,13 @@ public class MrFunktionenAgg {
      *      Schalter Quoten-RV
      * @return den Wert
      */
-    public static double gebuehrRv(int t, double gebuehrRvAbsolut, double zedZzrVorjahr, double gebuehrRvSatz,
-            boolean schalterQuotenRv) {
+    public static double gebuehrRv(int t, double gebuehrRvAbsolut, double zedZzrVorjahr, double kumZeVj,
+            double gebuehrRvSatz, boolean schalterQuotenRv) {
+
 
         double gebuehrRelativ;
 
-        if (schalterQuotenRv && (zedZzrVorjahr > 1 || t == 1)) {
+        if (schalterQuotenRv && (zedZzrVorjahr > 1 || kumZeVj > 1 || t == 1)) {
             gebuehrRelativ = gebuehrRvSatz / 10000.0 * zedZzrVorjahr;
 
             return Math.max(gebuehrRvAbsolut, gebuehrRelativ);
